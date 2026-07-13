@@ -37,11 +37,8 @@
         body { background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; overflow-x: hidden; }
 
         .hidden { display: none !important; }
-        
-        /* Парсер iOS Смайлов */
         .ios-emoji { width: 1.25em; height: 1.25em; vertical-align: -0.25em; display: inline-block; pointer-events: none; }
         
-        /* Кнопки и инпуты */
         button { background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: var(--radius); padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:active { transform: scale(0.95); opacity: 0.8; }
         button.text-btn { background: transparent; color: var(--text-color); }
@@ -51,41 +48,13 @@
         input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: var(--text-color); }
         textarea { border-radius: var(--radius-sm); resize: none; min-height: 100px; }
 
-        /* Стандартные Checkbox и Radio в стиле проекта */
-        input[type="checkbox"], input[type="radio"] {
-            appearance: none; -webkit-appearance: none;
-            width: 24px; height: 24px;
-            border: 2px solid var(--border-color);
-            background: var(--bg-color);
-            cursor: pointer;
-            position: relative;
-            display: inline-block;
-            vertical-align: middle;
-            transition: all 0.2s ease;
-            margin: 0;
-        }
+        input[type="checkbox"], input[type="radio"] { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; position: relative; display: inline-block; vertical-align: middle; transition: all 0.2s ease; margin: 0; }
         input[type="checkbox"] { border-radius: 8px; }
         input[type="radio"] { border-radius: 50%; }
+        input[type="checkbox"]:checked, input[type="radio"]:checked { background: var(--text-color); border-color: var(--text-color); }
+        input[type="checkbox"]:checked::after { content: ''; position: absolute; top: 3px; left: 7px; width: 6px; height: 11px; border: solid var(--bg-color); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        input[type="radio"]:checked::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background: var(--bg-color); }
 
-        input[type="checkbox"]:checked, input[type="radio"]:checked {
-            background: var(--text-color); border-color: var(--text-color);
-        }
-        /* Галочка */
-        input[type="checkbox"]:checked::after {
-            content: ''; position: absolute;
-            top: 3px; left: 7px; width: 6px; height: 11px;
-            border: solid var(--bg-color); border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-        /* Точка радио */
-        input[type="radio"]:checked::after {
-            content: ''; position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 10px; height: 10px; border-radius: 50%;
-            background: var(--bg-color);
-        }
-
-        /* Экраны и страницы */
         .screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 80px; background: var(--bg-color); transition: opacity 0.4s, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10; }
         .screen.slide-out { transform: translateY(100%); opacity: 0; pointer-events: none; }
         
@@ -114,11 +83,11 @@
         .action-btn.active-dislike { color: #5856d6; }
         .action-btn.active-save { color: #ffcc00; }
 
-        .comment { margin-bottom: 16px; padding-left: 12px; border-left: 2px solid var(--border-color); position: relative; }
+        .comment { padding: 8px 8px 8px 12px; margin-bottom: 16px; border-left: 2px solid var(--border-color); position: relative; border-radius: 0 8px 8px 0; transition: background-color 0.5s ease; }
         .comment.reply { margin-left: 20px; border-left-color: #5856d6; }
         .comment-header { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .comment-text { font-size: 14px; margin: 4px 0; }
-        .comment-actions { display: flex; gap: 12px; font-size: 12px; flex-wrap: wrap;}
+        .comment-actions { display: flex; gap: 16px; font-size: 14px; margin-top: 8px;}
 
         .prof-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-top: 24px; }
         .prof-tab { flex: 1; text-align: center; padding: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; font-size: 14px;}
@@ -127,7 +96,6 @@
 
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: var(--text-color); color: var(--bg-color); padding: 16px; border-radius: var(--radius); display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideDown 0.3s ease, fadeOut 0.3s ease 3.7s forwards; cursor: pointer; }
-        .toast-icon { font-size: 24px; }
         
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px; }
         .overlay.active { opacity: 1; pointer-events: auto; }
@@ -137,13 +105,32 @@
         .report-label { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
         .report-label:hover { border-color: var(--text-color); }
 
+        #ptr-indicator { display: flex; justify-content: center; align-items: center; height: 0; overflow: hidden; color: var(--text-muted); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .rotating { animation: spin 0.8s linear infinite !important; }
+
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
     </style>
 </head>
 <body>
+    <script>
+        if(localStorage.getItem('om_theme') === 'dark') document.body.dataset.theme = 'dark';
+    </script>
 
     <div id="toast-container"></div>
+
+    <!-- Кастомный Alert / Confirm (Попап) -->
+    <div class="overlay" id="dialog-modal">
+        <div class="modal" style="max-width: 350px;">
+            <h2 id="dialog-title" style="margin-bottom: 16px; text-align:center;">Внимание</h2>
+            <p id="dialog-text" style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; text-align:center;"></p>
+            <div style="display:flex; gap:12px;">
+                <button id="btn-dialog-cancel" class="text-btn" style="flex:1;">Отмена</button>
+                <button id="btn-dialog-confirm" style="flex:1; background:var(--danger); color:#fff;">Ок</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Редактирование профиля -->
     <div class="overlay" id="edit-profile-modal">
@@ -156,7 +143,7 @@
         </div>
     </div>
 
-    <!-- Система жалоб (С ИИ Анализом) -->
+    <!-- Система жалоб -->
     <div class="overlay" id="report-modal">
         <div class="modal">
             <h2 style="margin-bottom:16px; text-align:center;">Причина жалобы</h2>
@@ -212,8 +199,11 @@
 
     <!-- ОСНОВНОЙ ЭКРАН -->
     <div id="main-screen" class="screen slide-out">
-        <!-- ЛЕНТА -->
         <div id="tab-feed">
+            <div id="ptr-indicator">
+                <span class="material-symbols-rounded ptr-icon" style="font-size: 28px;">refresh</span>
+            </div>
+
             <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display:flex; flex-direction:column; gap:12px;">
                 <input type="text" id="search-input" placeholder="Поиск мемов..." style="padding: 12px 20px; font-size:14px; border-radius: 30px;">
                 <div style="display:flex; gap:12px;">
@@ -224,7 +214,6 @@
             <div class="feed-container" id="feed-list"></div>
         </div>
 
-        <!-- СОЗДАНИЕ -->
         <div id="tab-create" class="hidden">
             <div class="page-header" style="justify-content: space-between;">
                 <span>Новый мем</span>
@@ -243,11 +232,13 @@
             </div>
         </div>
 
-        <!-- ПРОФИЛЬ (СВОЙ) -->
         <div id="tab-profile" class="hidden">
             <div class="page-header" style="justify-content: space-between;">
                 <span>Профиль</span>
-                <button class="icon-btn" onclick="window.toggleTheme()"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div style="display:flex; gap:8px;">
+                    <button class="icon-btn" onclick="window.shareProfile(currentUser.username)"><span class="material-symbols-rounded">share</span></button>
+                    <button class="icon-btn" onclick="window.toggleTheme()"><span class="material-symbols-rounded">dark_mode</span></button>
+                </div>
             </div>
             <div class="feed-container" style="text-align: center;">
                 <div id="my-avatar" style="font-size: 80px; margin-bottom: 16px;"></div>
@@ -262,7 +253,7 @@
                 
                 <div style="display:flex; gap:12px; margin-bottom: 24px;">
                     <button onclick="window.openEditProfile()" style="flex:1; background:transparent; border:1px solid var(--border-color); color:var(--text-color);">Редактировать</button>
-                    <button onclick="window.logout()" style="flex:1; background:var(--danger); color:#fff;">Выйти</button>
+                    <button onclick="window.customConfirm('Выход', 'Вы точно хотите выйти из аккаунта?', 'Выйти', window.logout)" style="flex:1; background:var(--danger); color:#fff;">Выйти</button>
                 </div>
                 
                 <div class="prof-tabs">
@@ -287,7 +278,6 @@
 
     <!-- ВЛОЖЕННЫЕ ЭКРАНЫ -->
 
-    <!-- ДОКУМЕНТ: ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ -->
     <div id="page-policy" class="page">
         <div class="page-header">
             <button class="icon-btn" onclick="window.closePage('page-policy')"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -295,28 +285,20 @@
         </div>
         <div class="feed-container" style="padding: 32px 20px;">
             <h1 style="margin-bottom:24px; font-size:26px;">Политика конфиденциальности</h1>
-            
             <div style="font-size:15px; line-height:1.6; color:var(--text-color);">
-                <p style="margin-bottom:16px;"><strong>1. Приветствие и суть</strong><br>
-                Добро пожаловать в OnlyMemes! Наша цель — развлекательный контент. Ваши данные защищены и используются исключительно внутри сети.</p>
-                
-                <p style="margin-bottom:16px;"><strong>2. Формат контента</strong><br>
-                Здесь разрешено публиковать юмор, шутки, мемы, забавные наблюдения и цитаты. Любые угрозы, спам и незаконный 18+ контент запрещены.</p>
-
-                <p style="margin-bottom:16px;"><strong>3. Модерация ИИ</strong><br>
-                При публикации нейросеть анализирует ваш пост. Кроме того, при накоплении 3-х жалоб от разных людей на контент, он снова отправляется на проверку ИИ, который принимает решение об удалении.</p>
-
-                <p style="margin-bottom:16px;"><strong>4. Хранение данных</strong><br>
-                Мы храним ваш никнейм, пароль и мемы в облачной базе Firebase.</p>
+                <p style="margin-bottom:16px;"><strong>1. Приветствие и суть</strong><br> Добро пожаловать в OnlyMemes! Наша цель — развлекательный контент. Ваши данные защищены и используются исключительно внутри сети.</p>
+                <p style="margin-bottom:16px;"><strong>2. Формат контента</strong><br> Здесь разрешено публиковать юмор, шутки, мемы, забавные наблюдения и цитаты. Любые угрозы, спам и незаконный 18+ контент запрещены.</p>
+                <p style="margin-bottom:16px;"><strong>3. Модерация ИИ</strong><br> При публикации нейросеть анализирует ваш пост. Кроме того, при накоплении 3-х жалоб от разных людей на контент, он снова отправляется на проверку ИИ, который принимает решение об удалении.</p>
+                <p style="margin-bottom:16px;"><strong>4. Хранение данных</strong><br> Мы храним ваш никнейм, пароль и мемы в облачной базе Firebase.</p>
             </div>
         </div>
     </div>
 
-    <!-- ПРОФИЛЬ ДРУГОГО ПОЛЬЗОВАТЕЛЯ -->
     <div id="page-user" class="page">
         <div class="page-header">
             <button class="icon-btn" onclick="window.closePage('page-user')"><span class="material-symbols-rounded">arrow_back</span></button>
-            <span id="u-page-title">Профиль</span>
+            <span id="u-page-title" style="flex:1;">Профиль</span>
+            <button class="icon-btn" onclick="window.shareProfile(currentUserViewId)"><span class="material-symbols-rounded">share</span></button>
         </div>
         <div class="feed-container" style="text-align: center;">
             <div id="u-page-avatar" style="font-size: 80px; margin-bottom: 16px;"></div>
@@ -332,7 +314,6 @@
         </div>
     </div>
 
-    <!-- ПРОСМОТР ПОСТА -->
     <div id="page-post" class="page">
         <div class="page-header">
             <button class="icon-btn" onclick="window.closePage('page-post')"><span class="material-symbols-rounded">arrow_back</span></button>
@@ -368,11 +349,12 @@ const AI_MODEL = "google/gemma-4-31b-it:free";
 
 let currentUser = null, allPosts = [], allUsers = {}, appLoadedTime = Date.now();
 let emojis = ["👽","🤡","💩","💀","🤓","😎","👾","👻","👺","😺","🐶","🐸"], curAvatar = 0;
-let currentPostViewId = null, replyToCommentId = null, feedSort = 'new';
-let reportTargetData = null; // Для модалки жалоб
+let currentPostViewId = null, currentUserViewId = null, replyToCommentId = null, feedSort = 'new';
+let reportTargetData = null; 
+let usersLoaded = false, postsLoaded = false, initialDeepLinkHandled = false;
 
 const el = id => document.getElementById(id);
-window.el = el; // Привязка к window
+window.el = el; 
 
 window.safe = (str) => { return str ? str.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; };
 window.emojiParse = (text) => {
@@ -393,7 +375,7 @@ window.onload = async () => {
     const saved = localStorage.getItem('om_user');
     if(saved) {
         const snap = await get(ref(db, `users/${saved}`));
-        if(snap.exists()) loginSuccess(snap.val()); // Убрал вызов тоста "С возвращением"
+        if(snap.exists()) loginSuccess(snap.val()); 
     }
 };
 
@@ -404,11 +386,61 @@ window.showToast = (title, text, icon = "info", action = null) => {
     cont.appendChild(t); setTimeout(() => t.remove(), 4000);
 };
 
+// Кастомный Confirm (Алерт/Модалка)
+window.customConfirm = (title, text, btnText, onConfirm) => {
+    el('dialog-title').innerText = title;
+    el('dialog-text').innerText = text;
+    el('btn-dialog-confirm').innerText = btnText;
+    
+    // Сброс старых обработчиков
+    el('btn-dialog-confirm').onclick = null;
+    el('btn-dialog-cancel').onclick = null;
+
+    el('dialog-modal').classList.add('active');
+
+    el('btn-dialog-confirm').onclick = () => {
+        el('dialog-modal').classList.remove('active');
+        if (onConfirm) onConfirm();
+    };
+    el('btn-dialog-cancel').onclick = () => {
+        el('dialog-modal').classList.remove('active');
+    };
+};
+
+window.updateURL = (params) => {
+    const url = new URL(window.location);
+    for(let key in params) url.searchParams.set(key, params[key]);
+    window.history.pushState({}, '', url);
+};
+window.clearURL = () => {
+    const url = new URL(window.location); url.search = ''; window.history.pushState({}, '', url);
+};
+window.checkDeepLink = () => {
+    if(initialDeepLinkHandled || !usersLoaded || !postsLoaded) return;
+    initialDeepLinkHandled = true;
+    const params = new URLSearchParams(window.location.search);
+    if(params.has('post')) window.openPost(params.get('post'), true);
+    else if(params.has('user')) window.openProfile(params.get('user'), true);
+};
+
+window.addEventListener('popstate', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('post')) window.openPost(params.get('post'), true);
+    else if (params.has('user')) window.openProfile(params.get('user'), true);
+    else { window.closePage('page-post', true); window.closePage('page-user', true); }
+});
+
 window.toggleAuth = () => { el('login-form').classList.toggle('hidden'); el('reg-form').classList.toggle('hidden'); };
-window.toggleTheme = () => { document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark'; };
+
+window.toggleTheme = () => { 
+    const t = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.body.dataset.theme = t; 
+    localStorage.setItem('om_theme', t);
+};
+
 window.nextAvatar = () => { curAvatar = (curAvatar+1)%emojis.length; el('reg-avatar').innerHTML = window.emojiParse(emojis[curAvatar]); };
 window.openPage = (id) => el(id).classList.add('active');
-window.closePage = (id) => { el(id).classList.remove('active'); currentPostViewId = null; };
+window.closePage = (id, noPush = false) => { el(id).classList.remove('active'); currentPostViewId = null; if(!noPush) window.clearURL(); };
 
 document.querySelectorAll('.nav-item').forEach(btn => {
     btn.onclick = () => {
@@ -454,7 +486,7 @@ el('btn-login').onclick = async () => {
     loginSuccess(snap.val());
 };
 
-window.logout = () => { currentUser = null; localStorage.removeItem('om_user'); el('main-screen').classList.add('slide-out'); el('auth-screen').classList.remove('slide-out'); };
+window.logout = () => { currentUser = null; localStorage.removeItem('om_user'); el('main-screen').classList.add('slide-out'); el('auth-screen').classList.remove('slide-out'); window.clearURL(); };
 
 async function loginSuccess(user) {
     currentUser = user; localStorage.setItem('om_user', user.username);
@@ -466,23 +498,17 @@ function listenData() {
     onValue(ref(db, 'users'), snap => {
         if(snap.exists()) {
             allUsers = snap.val();
-            if(currentUser) {
-                currentUser = allUsers[currentUser.username];
-                renderMyProfile(); renderFeed();
-                if(currentPostViewId) window.openPost(currentPostViewId);
-            }
+            if(currentUser) { currentUser = allUsers[currentUser.username]; renderMyProfile(); renderFeed(); if(currentPostViewId) window.openPost(currentPostViewId, true); }
         }
+        usersLoaded = true; window.checkDeepLink();
     });
     onValue(ref(db, 'posts'), snap => {
         allPosts = [];
         if(snap.exists()) {
-            snap.forEach(c => {
-                const p = c.val(); p.id = c.key;
-                // Исключаем посты, которые были удалены ИИ или не подходят по возрасту
-                if(currentUser && currentUser.age >= p.age) allPosts.push(p);
-            });
+            snap.forEach(c => { const p = c.val(); p.id = c.key; if(currentUser && currentUser.age >= p.age) allPosts.push(p); });
         }
-        renderFeed(); renderMyProfile(); if(currentPostViewId) window.openPost(currentPostViewId);
+        renderFeed(); renderMyProfile(); if(currentPostViewId) window.openPost(currentPostViewId, true);
+        postsLoaded = true; window.checkDeepLink();
     });
     onValue(ref(db, `notifications/${currentUser.username}`), snap => {
         if(!snap.exists()) return;
@@ -539,18 +565,38 @@ window.setFeedSort = (sort, btn) => {
     feedSort = sort; renderFeed();
 };
 
-function renderFeed() {
+window.renderFeed = () => {
     const q = el('search-input').value.toLowerCase();
     let filtered = allPosts.filter(p => p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q));
     if(feedSort === 'new') filtered.sort((a,b) => b.timestamp - a.timestamp);
     else filtered.sort((a,b) => countVotes(b.likes) - countVotes(a.likes));
     el('feed-list').innerHTML = filtered.length ? filtered.map(p => createPostHTML(p)).join('') : '<p style="text-align:center;color:var(--text-muted); margin-top: 20px;">Ничего не найдено</p>';
-}
-el('search-input').addEventListener('input', renderFeed);
+};
+el('search-input').addEventListener('input', window.renderFeed);
+
+// PULL TO REFRESH LOGIC
+let pStartY = 0, pPulling = false;
+const screenNode = el('main-screen');
+const ptrNode = el('ptr-indicator');
+const ptrIcon = ptrNode.querySelector('.ptr-icon');
+
+screenNode.addEventListener('touchstart', e => {
+    if(screenNode.scrollTop <= 0 && !el('tab-feed').classList.contains('hidden')) { pStartY = e.touches[0].clientY; pPulling = true; ptrNode.style.transition = 'none'; }
+}, {passive: true});
+screenNode.addEventListener('touchmove', e => {
+    if(!pPulling) return; const diff = e.touches[0].clientY - pStartY;
+    if(diff > 0 && screenNode.scrollTop <= 0) { let h = Math.min(diff * 0.4, 70); ptrNode.style.height = h + 'px'; ptrIcon.style.transform = `rotate(${diff * 1.5}deg)`; } else { pPulling = false; ptrNode.style.height = '0px'; }
+}, {passive: true});
+screenNode.addEventListener('touchend', e => {
+    if(!pPulling) return; pPulling = false; ptrNode.style.transition = 'height 0.3s ease';
+    if(parseInt(ptrNode.style.height) > 50) {
+        ptrNode.style.height = '50px'; ptrIcon.classList.add('rotating');
+        setTimeout(() => { window.renderFeed(); window.showToast("Обновлено", "Лента обновлена", "check_circle"); ptrNode.style.height = '0px'; setTimeout(() => ptrIcon.classList.remove('rotating'), 300); }, 600);
+    } else { ptrNode.style.height = '0px'; }
+});
 
 window.vote = async (path) => {
-    const refPath = ref(db, `${path}/${currentUser.username}`);
-    const snap = await get(refPath);
+    const refPath = ref(db, `${path}/${currentUser.username}`); const snap = await get(refPath);
     if(snap.exists()) await remove(refPath);
     else {
         await set(refPath, true);
@@ -568,32 +614,48 @@ window.vote = async (path) => {
 };
 
 window.toggleSave = async (pid) => {
-    const path = `users/${currentUser.username}/bookmarks/${pid}`;
-    const snap = await get(ref(db, path));
+    const path = `users/${currentUser.username}/bookmarks/${pid}`; const snap = await get(ref(db, path));
     if(snap.exists()) { await remove(ref(db, path)); window.showToast("Удалено", "Удалено из закладок", "bookmark_remove"); }
     else { await set(ref(db, path), true); window.showToast("Сохранено", "Добавлено в закладки", "bookmark_added"); }
 };
 
-window.deletePost = async (pid) => {
-    if(confirm("Точно удалить этот мем?")) { await remove(ref(db, `posts/${pid}`)); await remove(ref(db, `comments/${pid}`)); window.showToast("Удалено", "Твой мем удален", "delete"); if(currentPostViewId===pid) window.closePage('page-post'); }
+window.deletePost = (pid) => {
+    window.customConfirm("Удаление", "Точно удалить этот мем?", "Удалить", async () => {
+        await remove(ref(db, `posts/${pid}`)); await remove(ref(db, `comments/${pid}`)); window.showToast("Удалено", "Твой мем удален", "delete"); if(currentPostViewId===pid) window.closePage('page-post'); 
+    });
 };
-window.deleteComment = async (pid, cid) => {
-    if(confirm("Удалить комментарий?")) { await remove(ref(db, `comments/${pid}/${cid}`)); window.showToast("Удалено", "Комментарий удален", "delete"); }
+
+window.deleteComment = (pid, cid) => {
+    window.customConfirm("Удаление", "Удалить комментарий?", "Удалить", async () => {
+        await remove(ref(db, `comments/${pid}/${cid}`)); window.showToast("Удалено", "Комментарий удален", "delete"); 
+    });
 };
+
 window.sharePost = (pid) => {
     const p = allPosts.find(x => x.id === pid);
     if(p) {
-        const text = `Зацени мем "${p.title}" от @${p.authorId} в OnlyMemes!\n\n${p.content}`;
+        const link = window.location.origin + window.location.pathname + "?post=" + pid;
+        const text = `Зацени мем "${p.title}" от @${p.authorId} в OnlyMemes!\n\n${link}`;
         if(navigator.clipboard) navigator.clipboard.writeText(text).then(() => window.showToast("Скопировано", "Мем скопирован", "content_copy")).catch(()=> window.showToast("Мем", text, "content_copy"));
         else window.showToast("Мем", text, "content_copy");
     }
 };
 
-// СИСТЕМА ЖАЛОБ И ИИ МОДЕРАЦИЯ
+window.shareProfile = (uid) => {
+    const link = window.location.origin + window.location.pathname + "?user=" + uid;
+    if(navigator.clipboard) navigator.clipboard.writeText(link).then(() => window.showToast("Скопировано", "Ссылка скопирована", "content_copy")).catch(()=> window.showToast("Ссылка", link, "content_copy"));
+    else window.showToast("Ссылка", link, "content_copy");
+};
+
+window.shareComment = (pid, cid) => {
+    const link = window.location.origin + window.location.pathname + "?post=" + pid + "&comment=" + cid;
+    if(navigator.clipboard) navigator.clipboard.writeText(link).then(() => window.showToast("Скопировано", "Ссылка на коммент скопирована", "content_copy")).catch(()=> window.showToast("Ссылка", link, "content_copy"));
+    else window.showToast("Ссылка", link, "content_copy");
+};
+
 window.prepareReport = (path) => {
     reportTargetData = path;
-    const radios = document.querySelectorAll('input[name="r_reason"]');
-    radios.forEach(r => r.checked = false);
+    document.querySelectorAll('input[name="r_reason"]').forEach(r => r.checked = false);
     el('report-modal').classList.add('active');
 };
 window.closeReportModal = () => { el('report-modal').classList.remove('active'); reportTargetData = null; };
@@ -601,8 +663,7 @@ window.closeReportModal = () => { el('report-modal').classList.remove('active');
 window.submitReport = async () => {
     const checked = document.querySelector('input[name="r_reason"]:checked');
     if(!checked) return window.showToast("Ошибка", "Выберите причину жалобы", "error");
-    const reason = checked.value;
-    const targetPath = reportTargetData;
+    const reason = checked.value, targetPath = reportTargetData;
     window.closeReportModal();
 
     const refPath = ref(db, `${targetPath}/reports/${currentUser.username}`);
@@ -610,7 +671,6 @@ window.submitReport = async () => {
     if(snapCheck.exists()) return window.showToast("Уже отправлено", "Вы уже жаловались", "info");
 
     await set(refPath, reason);
-    
     const objSnap = await get(ref(db, targetPath));
     const objData = objSnap.val();
     const reportsObj = objData.reports || {};
@@ -621,7 +681,6 @@ window.submitReport = async () => {
         let textToAnalyze = objData.text || ((objData.title || '') + " " + (objData.content || ''));
         let reasonList = Object.values(reportsObj).join(", ");
         
-        // Фоновый анализ ИИ
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
@@ -631,21 +690,15 @@ window.submitReport = async () => {
             if(data.choices[0].message.content.trim().toUpperCase().includes("YES")) {
                 await remove(ref(db, targetPath));
                 if(targetPath.startsWith('posts/')) {
-                    const pId = targetPath.split('/')[1];
-                    await remove(ref(db, `comments/${pId}`));
+                    const pId = targetPath.split('/')[1]; await remove(ref(db, `comments/${pId}`));
                     if(currentPostViewId === pId) window.closePage('page-post');
                 }
-            } else {
-                await update(ref(db, targetPath), { ai_cleared: true }); // Защита от спама репортами
-                await set(ref(db, `${targetPath}/reports`), null);
-            }
+            } else { await update(ref(db, targetPath), { ai_cleared: true }); await set(ref(db, `${targetPath}/reports`), null); }
         } catch(e) {}
-    } else {
-        window.showToast("Спасибо!", "Спасибо, что помогаете делать сообщество лучше.", "verified_user");
-    }
+    } else { window.showToast("Спасибо!", "Спасибо, что помогаете делать сообщество лучше.", "verified_user"); }
 };
 
-// СОЗДАНИЕ ПОСТА
+// Публикация поста с УМНЫМ ИИ
 el('btn-publish').onclick = async () => {
     const t = el('post-title').value.trim(), c = el('post-content').value.trim(), a = parseInt(el('post-age').querySelector('.active').dataset.age);
     if(!t || !c) return window.showToast("Ошибка", "Заполни поля", "error");
@@ -653,12 +706,26 @@ el('btn-publish').onclick = async () => {
     document.querySelector('[data-tab="feed"]').click();
 
     try {
+        const promptParams = `
+Ты модератор соцсети "Только Мемы". Указанная возрастная категория: ${a}+.
+ПРАВИЛА ВОЗРАСТА (КРИТИЧНО ВАЖНО):
+Для 6+: Абсолютно детские, добрые мемы. Строго ЗАПРЕЩЕНЫ: любой мат, сексуальный подтекст (слова типа "стояк", "секс" и т.д.), алкоголь, жестокость, черный юмор.
+Для 14+: Подростковый юмор. Разрешен сленг, но ЗАПРЕЩЕН мат, откровенная пошлость и взрослые 18+ темы.
+Для 18+: Разрешено всё, включая мат и черный юмор, КРОМЕ прямого спама или бессмысленного набора букв.
+
+Оцени текст. Если он НАРУШАЕТ правила категории ${a}+ ИЛИ вообще не является юмором/шуткой, ответь ТОЛЬКО одним словом: NO.
+Если он полностью подходит под возраст ${a}+ и является мемом/шуткой/жизненной ситуацией, ответь ТОЛЬКО одним словом: YES.
+Заголовок: "${t}"
+Текст: "${c}"`;
+
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: `Ты модератор соцсети "Только Мемы". Твоя задача пропускать ЛЮБОЙ юмор, постиронию, жизненные истории, забавные наблюдения, цитаты и мемы. Отвечай ТОЛЬКО одним словом YES, если текст хоть немного адекватен и несет развлекательный характер. Отвечай NO, только если это откровенный спам, угрозы или нечитаемый набор букв. Заголовок: "${t}". Текст: "${c}"` }]})
+            body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: promptParams }]})
         });
         const data = await res.json();
-        if(!data.choices[0].message.content.trim().toUpperCase().includes("YES")) return window.showToast("Отказано", "ИИ отклонил ваш пост", "block");
+        if(!data.choices[0].message.content.trim().toUpperCase().includes("YES")) {
+            return window.showToast("Отказано", "ИИ отклонил пост. Нарушение возраста или не мем.", "block");
+        }
     } catch(e) {}
 
     await set(push(ref(db, 'posts')), { authorId: currentUser.username, authorName: currentUser.name, authorAvatar: currentUser.avatar, title: t, content: c, age: a, timestamp: Date.now() });
@@ -695,9 +762,12 @@ async function renderMyProfile() {
     el('my-following').innerHTML = fHTML || '<p style="color:var(--text-muted)">Нет подписок</p>';
 }
 
-window.openProfile = async (uid) => {
+window.openProfile = async (uid, noPush = false) => {
     if(currentUser && uid === currentUser.username) return document.querySelector('[data-tab="profile"]').click();
     const u = allUsers[uid]; if(!u) return;
+    currentUserViewId = uid;
+    if(!noPush) window.updateURL({user: uid});
+
     el('u-page-name').innerHTML = window.emojiParse(u.name); el('u-page-user').innerText = "@"+u.username;
     el('u-page-avatar').innerHTML = window.emojiParse(u.avatar); el('u-page-bio').innerHTML = u.bio ? window.emojiParse(u.bio) : '';
     
@@ -714,7 +784,7 @@ window.openProfile = async (uid) => {
             push(ref(db, `notifications/${uid}`), { text: `@${currentUser.username} подписался на вас`, ts: Date.now(), targetUser: currentUser.username });
             btn.innerText = "Отписаться";
         }
-        window.openProfile(uid);
+        window.openProfile(uid, true);
     };
 
     const posts = allPosts.filter(p => p.authorId === uid);
@@ -722,9 +792,11 @@ window.openProfile = async (uid) => {
     window.openPage('page-user');
 };
 
-window.openPost = (pid) => {
+window.openPost = (pid, noPush = false) => {
     currentPostViewId = pid; const p = allPosts.find(x => x.id === pid);
-    if(!p) return window.closePage('page-post');
+    if(!p) return window.closePage('page-post', true);
+    if(!noPush) window.updateURL({post: pid});
+
     el('single-post-container').innerHTML = createPostHTML(p, true);
     loadComments(pid); window.openPage('page-post');
 };
@@ -739,23 +811,38 @@ function loadComments(pid) {
             const cm = c.val(); cm.id = c.key;
             const isMyCom = cm.authorId === currentUser.username;
             html += `
-                <div class="comment ${cm.replyTo ? 'reply' : ''}">
+                <div class="comment ${cm.replyTo ? 'reply' : ''}" id="comment-${cm.id}">
                     <div class="comment-header" onclick="window.openProfile('${cm.authorId}')"><span style="font-weight:700;">${window.emojiParse(cm.authorName)}</span> <span style="color:var(--text-muted);">@${window.safe(cm.authorId)}</span></div>
                     ${cm.replyTo ? `<div style="font-size:12px;color:#5856d6;margin-top:4px;">Ответ @${window.safe(cm.replyTo)}</div>` : ''}
                     <div class="comment-text">${window.emojiParse(cm.text)}</div>
                     <div class="comment-actions">
-                        <span class="action-btn ${hasVoted(cm.likes) ? 'active-like' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/likes')">Лайк (${countVotes(cm.likes)})</span>
-                        <span class="action-btn ${hasVoted(cm.dislikes) ? 'active-dislike' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/dislikes')">Дизлайк (${countVotes(cm.dislikes)})</span>
-                        <span class="action-btn" onclick="window.setReply('${cm.authorId}')">Ответить</span>
+                        <span class="action-btn ${hasVoted(cm.likes) ? 'active-like' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/likes')"><span class="material-symbols-rounded" style="font-size:18px;">thumb_up</span> ${countVotes(cm.likes)}</span>
+                        <span class="action-btn ${hasVoted(cm.dislikes) ? 'active-dislike' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/dislikes')"><span class="material-symbols-rounded" style="font-size:18px;">thumb_down</span> ${countVotes(cm.dislikes)}</span>
+                        <span class="action-btn" onclick="window.setReply('${cm.authorId}')"><span class="material-symbols-rounded" style="font-size:18px;">reply</span></span>
+                        
+                        <span class="action-btn" style="margin-left:auto;" onclick="window.shareComment('${pid}', '${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">share</span></span>
                         ${isMyCom 
-                            ? `<span class="action-btn" style="color:var(--danger); margin-left:auto;" onclick="window.deleteComment('${pid}', '${cm.id}')">Удалить</span>`
-                            : `<span class="action-btn" style="margin-left:auto;" onclick="window.prepareReport('comments/${pid}/${cm.id}')">Жалоба</span>`
+                            ? `<span class="action-btn" style="color:var(--danger);" onclick="window.deleteComment('${pid}', '${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></span>`
+                            : `<span class="action-btn" onclick="window.prepareReport('comments/${pid}/${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">flag</span></span>`
                         }
                     </div>
                 </div>
             `;
         });
         cont.innerHTML = html;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('post') === pid && urlParams.has('comment')) {
+            const cid = urlParams.get('comment');
+            setTimeout(() => {
+                const cEl = document.getElementById('comment-' + cid);
+                if(cEl) {
+                    cEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    cEl.style.backgroundColor = 'rgba(88, 86, 214, 0.15)';
+                    setTimeout(() => cEl.style.backgroundColor = 'transparent', 2500);
+                }
+            }, 300);
+        }
     });
 }
 
