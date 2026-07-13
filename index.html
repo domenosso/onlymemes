@@ -49,9 +49,11 @@
         textarea { border-radius: var(--radius-sm); resize: none; min-height: 100px; }
 
         /* ContentEditable (замена Textarea) */
-        .editable-content { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px 24px; font-size: 16px; min-height: 100px; outline: none; transition: border-color 0.3s; word-wrap: break-word; white-space: pre-wrap; margin-bottom: 12px; }
+        .editable-content { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px 24px; font-size: 16px; min-height: 100px; outline: none; transition: border-color 0.3s; word-wrap: break-word; white-space: pre-wrap; margin-bottom: 8px; }
         .editable-content:focus { border-color: var(--text-color); }
         .editable-content:empty:before { content: attr(placeholder); color: var(--text-muted); pointer-events: none; }
+        
+        .char-counter { font-size: 12px; color: var(--text-muted); text-align: right; margin-bottom: 16px; font-weight: 600; transition: color 0.3s; }
 
         /* Попап форматирования текста */
         #format-toolbar { position: absolute; background: var(--btn-bg); padding: 4px; border-radius: var(--radius-sm); display: flex; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transform: translate(-50%, -100%); margin-top: -12px; z-index: 4000; transition: opacity 0.2s; pointer-events: auto; }
@@ -87,7 +89,12 @@
         .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; }
         .post-avatar { font-size: 28px; background: var(--border-color); width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         .post-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .post-content { font-size: 15px; margin-bottom: 16px; white-space: pre-wrap; word-break: break-word; cursor: pointer; }
+        
+        .post-content-wrap { margin-bottom: 16px; cursor: pointer; }
+        .post-content { font-size: 15px; white-space: pre-wrap; word-break: break-word; }
+        .post-content.truncated { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+        .read-more-btn { margin-top: 4px; color: var(--text-color); font-size: 15px; }
+
         .post-actions { display: flex; gap: 16px; border-top: 1px solid var(--border-color); padding-top: 12px; }
         .action-btn { display: flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; font-size: 14px; font-weight: 600; transition: color 0.2s; }
         .action-btn.active-like { color: #ff2d55; }
@@ -241,8 +248,8 @@
             <div class="feed-container">
                 <input type="text" id="post-title" maxlength="35" placeholder="Оглавление (до 35 симв.)" style="font-weight:bold; margin-bottom:12px;">
                 
-                <!-- Заменил textarea на contenteditable для форматирования -->
                 <div id="post-content" class="editable-content" contenteditable="true" placeholder="Пиши свой мем здесь..."></div>
+                <div id="char-counter" class="char-counter">0 / 900</div>
                 
                 <p style="margin-bottom: 8px; font-size: 14px; font-weight: 600;">Возраст:</p>
                 <div class="age-selector" id="post-age">
@@ -294,6 +301,7 @@
             <div class="nav-item active" data-tab="feed"><span class="material-symbols-rounded">home</span></div>
             <div class="nav-item" data-tab="create"><span class="material-symbols-rounded">add_circle</span></div>
             <div class="nav-item" data-tab="profile"><span class="material-symbols-rounded">person</span></div>
+            <div class="nav-item" onclick="window.open('https://t.me/svyaz_reqdev_bot', '_blank')"><span class="material-symbols-rounded">support_agent</span></div>
         </div>
     </div>
 
@@ -409,6 +417,21 @@ window.emojiParse = (text) => {
 window.onload = async () => {
     document.querySelectorAll('.static-emoji').forEach(e => { e.innerHTML = window.emojiParse(window.safe(e.innerText)); e.classList.remove('static-emoji'); });
     el('reg-avatar').innerHTML = window.emojiParse(emojis[0]);
+    
+    // Блокировка изменения возраста по железу на этапе регистрации
+    const savedDeviceAge = localStorage.getItem('om_device_age');
+    if(savedDeviceAge) {
+        document.querySelectorAll('#reg-age .age-option').forEach(opt => {
+            if(opt.dataset.age === savedDeviceAge) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+                opt.classList.add('disabled');
+                opt.innerHTML = `<span class="static-emoji">${window.emojiParse('🚫')}</span> ${opt.dataset.age}+`;
+            }
+        });
+    }
+
     const saved = localStorage.getItem('om_user');
     if(saved) {
         const snap = await get(ref(db, `users/${saved}`));
@@ -424,6 +447,13 @@ window.showToast = (title, text, icon = "info", action = null) => {
 };
 
 // WYSIWYG Логика для выделения текста и форматирования
+el('post-content').addEventListener('input', function() {
+    let text = this.innerText || "";
+    let len = text.trim().length;
+    el('char-counter').innerText = len + " / 900";
+    el('char-counter').style.color = len > 900 ? 'var(--danger)' : 'var(--text-muted)';
+});
+
 document.addEventListener('selectionchange', () => {
     const selection = window.getSelection();
     const editor = el('post-content');
@@ -443,11 +473,11 @@ document.addEventListener('selectionchange', () => {
 });
 
 window.formatText = (cmd, e) => {
-    e.preventDefault(); // Предотвращаем потерю фокуса
+    e.preventDefault(); 
     document.execCommand(cmd, false, null);
 };
 
-// Блокировка возрастных категорий
+// Блокировка возрастных категорий при публикации
 window.updateAgeOptions = () => {
     if(!currentUser) return;
     const ageOptions = document.querySelectorAll('#post-age .age-option');
@@ -530,6 +560,7 @@ window.closePage = (id, noPush = false) => { el(id).classList.remove('active'); 
 
 document.querySelectorAll('.nav-item').forEach(btn => {
     btn.onclick = () => {
+        if(btn.hasAttribute('onclick')) return; // Пропуск кнопки поддержки
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         ['feed','create','profile'].forEach(t => el('tab-'+t).classList.add('hidden'));
@@ -562,10 +593,20 @@ el('btn-reg').onclick = async () => {
     if(!name || !user || !p1) return window.showToast("Ошибка", "Заполните поля", "error");
     if(p1 !== p2) return window.showToast("Ошибка", "Пароли не совпадают", "error");
     if(!el('reg-policy').checked) return window.showToast("Ошибка", "Примите политику", "error");
+    
+    // Блокировка по железу
+    const deviceAge = localStorage.getItem('om_device_age');
+    if (deviceAge && parseInt(deviceAge) !== age) {
+        return window.showToast("Ошибка", `На этом устройстве можно создать аккаунт только для ${deviceAge}+`, "block");
+    }
+
     const snap = await get(ref(db, `users/${user}`));
     if(snap.exists()) return window.showToast("Ошибка", "Юзернейм занят", "error");
+    
     const uData = { name, username: user, password: p1, avatar: emojis[curAvatar], age, bio: '' };
     await set(ref(db, `users/${user}`), uData);
+    localStorage.setItem('om_device_age', age);
+    
     loginSuccess(uData);
 };
 
@@ -624,6 +665,11 @@ function createPostHTML(p, isSingle = false) {
     const myS = currentUser?.bookmarks?.[p.id];
     const isMyPost = currentUser && p.authorId === currentUser.username;
     
+    // Проверка на длину для сворачивания поста
+    const rawText = p.content.replace(/<[^>]*>/g, '');
+    const lineBreaks = (p.content.match(/<br>/g) || []).length;
+    const isLong = rawText.length > 250 || lineBreaks > 4;
+    
     return `
         <div class="post" id="post-${p.id}">
             <div class="post-header" onclick="window.openProfile('${p.authorId}')">
@@ -634,7 +680,12 @@ function createPostHTML(p, isSingle = false) {
                 </div>
             </div>
             <div class="post-title" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">${window.emojiParse(window.safe(p.title))}</div>
-            <div class="post-content" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">${window.emojiParse(p.content)}</div>
+            
+            <div class="post-content-wrap" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">
+                <div class="post-content ${!isSingle && isLong ? 'truncated' : ''}">${window.emojiParse(p.content)}</div>
+                ${!isSingle && isLong ? `<div class="read-more-btn"><b>...еще</b></div>` : ''}
+            </div>
+
             <div class="post-actions">
                 <div class="action-btn ${myL ? 'active-like' : ''}" onclick="window.vote('posts/${p.id}/likes')"><span class="material-symbols-rounded">thumb_up</span> ${countVotes(p.likes)}</div>
                 <div class="action-btn ${myD ? 'active-dislike' : ''}" onclick="window.vote('posts/${p.id}/dislikes')"><span class="material-symbols-rounded">thumb_down</span> ${countVotes(p.dislikes)}</div>
@@ -727,12 +778,9 @@ window.sharePost = (pid) => {
     const p = allPosts.find(x => x.id === pid);
     if(p) {
         const link = window.location.origin + window.location.pathname + "?post=" + pid;
-        
-        // Достаем текст без HTML тегов для буфера обмена
         let tmp = document.createElement('div');
         tmp.innerHTML = p.content;
         const pureText = tmp.textContent || tmp.innerText || "";
-
         const text = `Зацени мем "${p.title}" от @${p.authorId} в OnlyMemes!\n\n${pureText}\n\n${link}`;
         if(navigator.clipboard) navigator.clipboard.writeText(text).then(() => window.showToast("Скопировано", "Мем скопирован", "content_copy")).catch(()=> window.showToast("Мем", text, "content_copy"));
         else window.showToast("Мем", text, "content_copy");
@@ -803,26 +851,25 @@ el('btn-publish').onclick = async () => {
     const a = parseInt(el('post-age').querySelector('.active').dataset.age);
     
     if(!t || !c) return window.showToast("Ошибка", "Заполни поля", "error");
-    window.showToast("Проверка ИИ", "Мем анализируется...", "psychology");
-    document.querySelector('[data-tab="feed"]').click();
-
-    // Достаем просто текст без тегов для ИИ
+    
     let tmp = document.createElement('div');
     tmp.innerHTML = c;
     let cleanTextForAI = tmp.textContent || tmp.innerText || "";
+    
+    if(cleanTextForAI.length > 900) return window.showToast("Ошибка", "Максимум 900 символов!", "error");
+
+    window.showToast("Проверка ИИ", "Мем анализируется...", "psychology");
+    document.querySelector('[data-tab="feed"]').click();
 
     try {
-        const promptText = `
-Ты модератор соцсети "Только Мемы". Указанная возрастная категория автора для этого поста: ${a}+.
+        const promptText = `Ты модератор соцсети "Только Мемы". Указанная возрастная категория автора для этого поста: ${a}+.
 Твоя задача — строго проверять текст на соответствие возрасту!
 ПРАВИЛА:
 Для 6+: Абсолютно детские, добрые мемы. Строго ЗАПРЕЩЕНЫ: любой мат, сексуальный подтекст (слова типа "стояк", "секс", "дрочить" и т.д.), алкоголь, жестокость.
 Для 14+: Подростковый юмор. Разрешен сленг, но ЗАПРЕЩЕН мат, откровенная пошлость и взрослые 18+ темы.
 Для 18+: Разрешено всё, включая мат и черный юмор.
-
 Оцени текст. Если он НАРУШАЕТ правила указанной категории ${a}+ ИЛИ является прямым спамом, ответь ТОЛЬКО одним словом: NO.
 Если он полностью подходит под возраст ${a}+ и является мемом/шуткой/жизой, ответь ТОЛЬКО одним словом: YES.
-
 Заголовок: "${t}"
 Текст: "${cleanTextForAI}"`;
 
@@ -837,7 +884,11 @@ el('btn-publish').onclick = async () => {
     } catch(e) {}
 
     await set(push(ref(db, 'posts')), { authorId: currentUser.username, authorName: currentUser.name, authorAvatar: currentUser.avatar, title: t, content: c, age: a, timestamp: Date.now() });
-    window.showToast("Опубликовано", "Твой мем в ленте!", "rocket_launch"); el('post-title').value = ''; el('post-content').innerHTML = '';
+    window.showToast("Опубликовано", "Твой мем в ленте!", "rocket_launch"); 
+    el('post-title').value = ''; 
+    el('post-content').innerHTML = '';
+    el('char-counter').innerText = "0 / 900";
+    el('char-counter').style.color = "var(--text-muted)";
 };
 
 window.openEditProfile = () => { el('edit-name').value = currentUser.name || ''; el('edit-bio').value = currentUser.bio || ''; el('edit-profile-modal').classList.add('active'); };
