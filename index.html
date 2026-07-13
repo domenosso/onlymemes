@@ -559,7 +559,7 @@ window.openPage = (id) => el(id).classList.add('active');
 window.closePage = (id, noPush = false) => { el(id).classList.remove('active'); currentPostViewId = null; if(!noPush) window.clearURL(); };
 
 document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.onclick = () => {
+    btn.addEventListener('click', () => {
         if(btn.hasAttribute('onclick')) return; // Пропуск кнопки поддержки
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -567,7 +567,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
         el('tab-'+btn.dataset.tab).classList.remove('hidden');
         if(btn.dataset.tab === 'profile') renderMyProfile();
         if(btn.dataset.tab === 'create') window.updateAgeOptions();
-    }
+    }); // <-- здесь добавилась круглая скобка
 });
 
 document.querySelectorAll('.prof-tab').forEach(t => {
