@@ -41,15 +41,51 @@
         /* Парсер iOS Смайлов */
         .ios-emoji { width: 1.25em; height: 1.25em; vertical-align: -0.25em; display: inline-block; pointer-events: none; }
         
+        /* Кнопки и инпуты */
         button { background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: var(--radius); padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:active { transform: scale(0.95); opacity: 0.8; }
         button.text-btn { background: transparent; color: var(--text-color); }
         button.icon-btn { background: transparent; color: var(--text-color); padding: 8px; }
         
-        input, textarea { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px 24px; font-size: 16px; outline: none; transition: border-color 0.3s; width: 100%; }
-        input:focus, textarea:focus { border-color: var(--text-color); }
+        input[type="text"], input[type="password"], textarea { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px 24px; font-size: 16px; outline: none; transition: border-color 0.3s; width: 100%; }
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: var(--text-color); }
         textarea { border-radius: var(--radius-sm); resize: none; min-height: 100px; }
 
+        /* Стандартные Checkbox и Radio в стиле проекта */
+        input[type="checkbox"], input[type="radio"] {
+            appearance: none; -webkit-appearance: none;
+            width: 24px; height: 24px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-color);
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            transition: all 0.2s ease;
+            margin: 0;
+        }
+        input[type="checkbox"] { border-radius: 8px; }
+        input[type="radio"] { border-radius: 50%; }
+
+        input[type="checkbox"]:checked, input[type="radio"]:checked {
+            background: var(--text-color); border-color: var(--text-color);
+        }
+        /* Галочка */
+        input[type="checkbox"]:checked::after {
+            content: ''; position: absolute;
+            top: 3px; left: 7px; width: 6px; height: 11px;
+            border: solid var(--bg-color); border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        /* Точка радио */
+        input[type="radio"]:checked::after {
+            content: ''; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--bg-color);
+        }
+
+        /* Экраны и страницы */
         .screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 80px; background: var(--bg-color); transition: opacity 0.4s, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10; }
         .screen.slide-out { transform: translateY(100%); opacity: 0; pointer-events: none; }
         
@@ -77,7 +113,6 @@
         .action-btn.active-like { color: #ff2d55; }
         .action-btn.active-dislike { color: #5856d6; }
         .action-btn.active-save { color: #ffcc00; }
-        .action-btn.active-report { color: var(--danger); }
 
         .comment { margin-bottom: 16px; padding-left: 12px; border-left: 2px solid var(--border-color); position: relative; }
         .comment.reply { margin-left: 20px; border-left-color: #5856d6; }
@@ -98,7 +133,9 @@
         .overlay.active { opacity: 1; pointer-events: auto; }
         .modal { background: var(--bg-color); width: 100%; max-width: 500px; max-height: 80vh; padding: 24px; border-radius: var(--radius-sm); transform: scale(0.9); transition: 0.3s; display: flex; flex-direction: column; text-align: left; }
         .overlay.active .modal { transform: scale(1); }
-        .modal-body { overflow-y: auto; margin-bottom: 20px; font-size: 14px; color: var(--text-muted); white-space: pre-wrap; line-height: 1.5; }
+
+        .report-label { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
+        .report-label:hover { border-color: var(--text-color); }
 
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
@@ -115,25 +152,22 @@
             <input type="text" id="edit-name" placeholder="Твое имя" maxlength="30" style="margin-bottom: 16px;">
             <textarea id="edit-bio" placeholder="Расскажи о себе (до 100 симв.)" maxlength="100" style="margin-bottom: 24px; min-height: 80px;"></textarea>
             <button id="btn-save-profile" style="width:100%; margin-bottom: 8px;">Сохранить</button>
-            <button class="text-btn" onclick="el('edit-profile-modal').classList.remove('active')" style="width:100%;">Отмена</button>
+            <button class="text-btn" onclick="window.el('edit-profile-modal').classList.remove('active')" style="width:100%;">Отмена</button>
         </div>
     </div>
 
-    <!-- Политика -->
-    <div class="overlay" id="policy-modal">
+    <!-- Система жалоб (С ИИ Анализом) -->
+    <div class="overlay" id="report-modal">
         <div class="modal">
-            <h2 style="text-align: center;">Политика</h2>
-            <div class="modal-body" style="text-align: left;">
-1. Сбор данных
-Все данные хранятся в Firebase. Имена, био и юзернеймы публичны.
-
-2. Контент
-Публикуются ТОЛЬКО МЕМЫ. ИИ-модератор фильтрует посты.
-
-3. Жалобы и Модерация
-Любой пост/коммент может быть удален, если соберет 3 жалобы от уникальных пользователей.
+            <h2 style="margin-bottom:16px; text-align:center;">Причина жалобы</h2>
+            <div id="report-options" style="margin-bottom: 20px;">
+                <label class="report-label"><input type="radio" name="r_reason" value="Спам"> <span>Спам / Реклама</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="Оскорбление"> <span>Оскорбление / Токсичность</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="Не формат"> <span>Не формат / Не мем</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="18+"> <span>Запрещенный 18+ контент</span></label>
             </div>
-            <button onclick="el('policy-modal').classList.remove('active')">Закрыть</button>
+            <button onclick="window.submitReport()" style="width:100%; background:var(--danger); margin-bottom:8px;">Отправить жалобу</button>
+            <button class="text-btn" onclick="window.closeReportModal()" style="width:100%;">Отмена</button>
         </div>
     </div>
 
@@ -147,11 +181,11 @@
                 <input type="text" id="login-user" placeholder="@username" style="margin-bottom: 12px;">
                 <input type="password" id="login-pass" placeholder="Пароль" style="margin-bottom: 16px;">
                 <button id="btn-login" style="width:100%;">Войти</button>
-                <button class="text-btn" onclick="toggleAuth()" style="width:100%; margin-top: 16px;">Создать аккаунт</button>
+                <button class="text-btn" onclick="window.toggleAuth()" style="width:100%; margin-top: 16px;">Создать аккаунт</button>
             </div>
 
             <div id="reg-form" class="hidden">
-                <div id="reg-avatar" onclick="nextAvatar()" style="font-size: 64px; cursor: pointer; transition: 0.2s; height: 80px; display:flex; justify-content:center; align-items:center;"></div>
+                <div id="reg-avatar" onclick="window.nextAvatar()" style="font-size: 64px; cursor: pointer; transition: 0.2s; height: 80px; display:flex; justify-content:center; align-items:center;"></div>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Нажми, чтобы сменить смайл</p>
                 
                 <input type="text" id="reg-name" placeholder="Имя" style="margin-bottom: 12px;">
@@ -165,27 +199,26 @@
                     <div class="age-option" data-age="18"><span class="static-emoji">👨</span> 18+</div>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; text-align:left;">
-                    <input type="checkbox" id="reg-policy" style="width:24px; height:24px;">
-                    <span style="font-size: 14px;">Согласен с <u style="cursor:pointer;" onclick="el('policy-modal').classList.add('active')">политикой</u></span>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px; text-align:left;">
+                    <input type="checkbox" id="reg-policy">
+                    <span style="font-size: 14px;">Согласен с <u style="cursor:pointer;" onclick="window.openPage('page-policy')">политикой конфиденциальности</u></span>
                 </div>
 
                 <button id="btn-reg" style="width:100%;">Создать аккаунт</button>
-                <button class="text-btn" onclick="toggleAuth()" style="width:100%; margin-top: 16px;">Уже есть аккаунт? Войти</button>
+                <button class="text-btn" onclick="window.toggleAuth()" style="width:100%; margin-top: 16px;">Уже есть аккаунт? Войти</button>
             </div>
         </div>
     </div>
 
     <!-- ОСНОВНОЙ ЭКРАН -->
     <div id="main-screen" class="screen slide-out">
-        
         <!-- ЛЕНТА -->
         <div id="tab-feed">
             <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display:flex; flex-direction:column; gap:12px;">
                 <input type="text" id="search-input" placeholder="Поиск мемов..." style="padding: 12px 20px; font-size:14px; border-radius: 30px;">
                 <div style="display:flex; gap:12px;">
-                    <button class="filter-btn active" onclick="setFeedSort('new', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--btn-bg); color:var(--btn-text); transition:0.2s;">Новые</button>
-                    <button class="filter-btn" onclick="setFeedSort('top', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--border-color); color:var(--text-color); transition:0.2s;">Топ <span class="static-emoji" style="margin-left:4px;">🔥</span></button>
+                    <button class="filter-btn active" onclick="window.setFeedSort('new', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--btn-bg); color:var(--btn-text); transition:0.2s;">Новые</button>
+                    <button class="filter-btn" onclick="window.setFeedSort('top', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--border-color); color:var(--text-color); transition:0.2s;">Топ <span class="static-emoji" style="margin-left:4px;">🔥</span></button>
                 </div>
             </div>
             <div class="feed-container" id="feed-list"></div>
@@ -214,7 +247,7 @@
         <div id="tab-profile" class="hidden">
             <div class="page-header" style="justify-content: space-between;">
                 <span>Профиль</span>
-                <button class="icon-btn" onclick="toggleTheme()"><span class="material-symbols-rounded">dark_mode</span></button>
+                <button class="icon-btn" onclick="window.toggleTheme()"><span class="material-symbols-rounded">dark_mode</span></button>
             </div>
             <div class="feed-container" style="text-align: center;">
                 <div id="my-avatar" style="font-size: 80px; margin-bottom: 16px;"></div>
@@ -228,8 +261,8 @@
                 </div>
                 
                 <div style="display:flex; gap:12px; margin-bottom: 24px;">
-                    <button onclick="openEditProfile()" style="flex:1; background:transparent; border:1px solid var(--border-color); color:var(--text-color);">Редактировать</button>
-                    <button onclick="logout()" style="flex:1; background:var(--danger); color:#fff;">Выйти</button>
+                    <button onclick="window.openEditProfile()" style="flex:1; background:transparent; border:1px solid var(--border-color); color:var(--text-color);">Редактировать</button>
+                    <button onclick="window.logout()" style="flex:1; background:var(--danger); color:#fff;">Выйти</button>
                 </div>
                 
                 <div class="prof-tabs">
@@ -252,10 +285,37 @@
         </div>
     </div>
 
+    <!-- ВЛОЖЕННЫЕ ЭКРАНЫ -->
+
+    <!-- ДОКУМЕНТ: ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ -->
+    <div id="page-policy" class="page">
+        <div class="page-header">
+            <button class="icon-btn" onclick="window.closePage('page-policy')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <span>Документ</span>
+        </div>
+        <div class="feed-container" style="padding: 32px 20px;">
+            <h1 style="margin-bottom:24px; font-size:26px;">Политика конфиденциальности</h1>
+            
+            <div style="font-size:15px; line-height:1.6; color:var(--text-color);">
+                <p style="margin-bottom:16px;"><strong>1. Приветствие и суть</strong><br>
+                Добро пожаловать в OnlyMemes! Наша цель — развлекательный контент. Ваши данные защищены и используются исключительно внутри сети.</p>
+                
+                <p style="margin-bottom:16px;"><strong>2. Формат контента</strong><br>
+                Здесь разрешено публиковать юмор, шутки, мемы, забавные наблюдения и цитаты. Любые угрозы, спам и незаконный 18+ контент запрещены.</p>
+
+                <p style="margin-bottom:16px;"><strong>3. Модерация ИИ</strong><br>
+                При публикации нейросеть анализирует ваш пост. Кроме того, при накоплении 3-х жалоб от разных людей на контент, он снова отправляется на проверку ИИ, который принимает решение об удалении.</p>
+
+                <p style="margin-bottom:16px;"><strong>4. Хранение данных</strong><br>
+                Мы храним ваш никнейм, пароль и мемы в облачной базе Firebase.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- ПРОФИЛЬ ДРУГОГО ПОЛЬЗОВАТЕЛЯ -->
     <div id="page-user" class="page">
         <div class="page-header">
-            <button class="icon-btn" onclick="closePage('page-user')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <button class="icon-btn" onclick="window.closePage('page-user')"><span class="material-symbols-rounded">arrow_back</span></button>
             <span id="u-page-title">Профиль</span>
         </div>
         <div class="feed-container" style="text-align: center;">
@@ -263,7 +323,6 @@
             <h2 id="u-page-name">Имя</h2>
             <p id="u-page-user" style="color: var(--text-muted); margin-bottom: 8px;">@user</p>
             <p id="u-page-bio" style="font-size: 14px; margin-bottom: 24px; white-space: pre-wrap; word-break: break-word;"></p>
-            
             <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 24px;">
                 <div><h3 id="u-stat-followers">0</h3><p style="font-size: 12px; color: var(--text-muted);">Подписчиков</p></div>
             </div>
@@ -276,7 +335,7 @@
     <!-- ПРОСМОТР ПОСТА -->
     <div id="page-post" class="page">
         <div class="page-header">
-            <button class="icon-btn" onclick="closePage('page-post')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <button class="icon-btn" onclick="window.closePage('page-post')"><span class="material-symbols-rounded">arrow_back</span></button>
             <span>Мем</span>
         </div>
         <div class="feed-container" id="single-post-container"></div>
@@ -298,10 +357,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyB6KVgGKSPFWdIweh_tY8oWAYIBQk9B34I",
   authDomain: "onlymems-fe4e6.firebaseapp.com",
   databaseURL: "https://onlymems-fe4e6-default-rtdb.firebaseio.com",
-  projectId: "onlymems-fe4e6",
-  storageBucket: "onlymems-fe4e6.firebasestorage.app",
-  messagingSenderId: "415620827216",
-  appId: "1:415620827216:web:22ac391001f83264f7e955"
+  projectId: "onlymems-fe4e6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -313,13 +369,15 @@ const AI_MODEL = "google/gemma-4-31b-it:free";
 let currentUser = null, allPosts = [], allUsers = {}, appLoadedTime = Date.now();
 let emojis = ["👽","🤡","💩","💀","🤓","😎","👾","👻","👺","😺","🐶","🐸"], curAvatar = 0;
 let currentPostViewId = null, replyToCommentId = null, feedSort = 'new';
-const el = id => document.getElementById(id);
+let reportTargetData = null; // Для модалки жалоб
 
-// IOS Смайлы (через CDN) и Защита от XSS
+const el = id => document.getElementById(id);
+window.el = el; // Привязка к window
+
 window.safe = (str) => { return str ? str.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; };
 window.emojiParse = (text) => {
     if(!text) return '';
-    let safeStr = safe(text);
+    let safeStr = window.safe(text);
     try {
         const reg = new RegExp('\\p{RGI_Emoji}', 'vg');
         return safeStr.replace(reg, m => `<img src="https://emojicdn.elk.sh/${encodeURIComponent(m)}?style=apple" class="ios-emoji" alt="${m}">`);
@@ -330,12 +388,12 @@ window.emojiParse = (text) => {
 };
 
 window.onload = async () => {
-    document.querySelectorAll('.static-emoji').forEach(e => { e.innerHTML = emojiParse(e.innerText); e.classList.remove('static-emoji'); });
-    el('reg-avatar').innerHTML = emojiParse(emojis[0]);
+    document.querySelectorAll('.static-emoji').forEach(e => { e.innerHTML = window.emojiParse(e.innerText); e.classList.remove('static-emoji'); });
+    el('reg-avatar').innerHTML = window.emojiParse(emojis[0]);
     const saved = localStorage.getItem('om_user');
     if(saved) {
         const snap = await get(ref(db, `users/${saved}`));
-        if(snap.exists()) loginSuccess(snap.val());
+        if(snap.exists()) loginSuccess(snap.val()); // Убрал вызов тоста "С возвращением"
     }
 };
 
@@ -348,7 +406,9 @@ window.showToast = (title, text, icon = "info", action = null) => {
 
 window.toggleAuth = () => { el('login-form').classList.toggle('hidden'); el('reg-form').classList.toggle('hidden'); };
 window.toggleTheme = () => { document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark'; };
-window.nextAvatar = () => { curAvatar = (curAvatar+1)%emojis.length; el('reg-avatar').innerHTML = emojiParse(emojis[curAvatar]); };
+window.nextAvatar = () => { curAvatar = (curAvatar+1)%emojis.length; el('reg-avatar').innerHTML = window.emojiParse(emojis[curAvatar]); };
+window.openPage = (id) => el(id).classList.add('active');
+window.closePage = (id) => { el(id).classList.remove('active'); currentPostViewId = null; };
 
 document.querySelectorAll('.nav-item').forEach(btn => {
     btn.onclick = () => {
@@ -373,18 +433,14 @@ document.querySelectorAll('.age-selector .age-option').forEach(opt => {
     opt.onclick = (e) => { e.currentTarget.parentNode.querySelectorAll('.age-option').forEach(o => o.classList.remove('active')); e.currentTarget.classList.add('active'); }
 });
 
-window.openPage = (id) => el(id).classList.add('active');
-window.closePage = (id) => { el(id).classList.remove('active'); currentPostViewId = null; };
-
-// Авторизация
 el('btn-reg').onclick = async () => {
     const name = el('reg-name').value.trim(), user = el('reg-user').value.trim().replace('@','').toLowerCase();
     const p1 = el('reg-pass').value, p2 = el('reg-pass2').value, age = parseInt(el('reg-age').querySelector('.active').dataset.age);
-    if(!name || !user || !p1) return showToast("Ошибка", "Заполните поля", "error");
-    if(p1 !== p2) return showToast("Ошибка", "Пароли не совпадают", "error");
-    if(!el('reg-policy').checked) return showToast("Ошибка", "Примите политику", "error");
+    if(!name || !user || !p1) return window.showToast("Ошибка", "Заполните поля", "error");
+    if(p1 !== p2) return window.showToast("Ошибка", "Пароли не совпадают", "error");
+    if(!el('reg-policy').checked) return window.showToast("Ошибка", "Примите политику", "error");
     const snap = await get(ref(db, `users/${user}`));
-    if(snap.exists()) return showToast("Ошибка", "Юзернейм занят", "error");
+    if(snap.exists()) return window.showToast("Ошибка", "Юзернейм занят", "error");
     const uData = { name, username: user, password: p1, avatar: emojis[curAvatar], age, bio: '' };
     await set(ref(db, `users/${user}`), uData);
     loginSuccess(uData);
@@ -394,7 +450,7 @@ el('btn-login').onclick = async () => {
     const user = el('login-user').value.trim().replace('@','').toLowerCase(), pass = el('login-pass').value;
     if(!user || !pass) return;
     const snap = await get(ref(db, `users/${user}`));
-    if(!snap.exists() || snap.val().password !== pass) return showToast("Ошибка", "Неверные данные", "error");
+    if(!snap.exists() || snap.val().password !== pass) return window.showToast("Ошибка", "Неверные данные", "error");
     loginSuccess(snap.val());
 };
 
@@ -403,7 +459,6 @@ window.logout = () => { currentUser = null; localStorage.removeItem('om_user'); 
 async function loginSuccess(user) {
     currentUser = user; localStorage.setItem('om_user', user.username);
     el('auth-screen').classList.add('slide-out'); el('main-screen').classList.remove('slide-out');
-    showToast("Привет!", "С возвращением, " + safe(user.name), "waving_hand");
     listenData();
 }
 
@@ -423,7 +478,8 @@ function listenData() {
         if(snap.exists()) {
             snap.forEach(c => {
                 const p = c.val(); p.id = c.key;
-                if((!p.reports || Object.keys(p.reports).length < 3) && currentUser.age >= p.age) allPosts.push(p);
+                // Исключаем посты, которые были удалены ИИ или не подходят по возрасту
+                if(currentUser && currentUser.age >= p.age) allPosts.push(p);
             });
         }
         renderFeed(); renderMyProfile(); if(currentPostViewId) window.openPost(currentPostViewId);
@@ -433,7 +489,7 @@ function listenData() {
         snap.forEach(c => {
             const n = c.val();
             if(n.ts > appLoadedTime && !n.shown) {
-                showToast("Уведомление", emojiParse(n.text), "notifications", () => {
+                window.showToast("Уведомление", window.emojiParse(n.text), "notifications", () => {
                     if(n.targetUser) window.openProfile(n.targetUser); if(n.targetPost) window.openPost(n.targetPost);
                 });
                 update(ref(db, `notifications/${currentUser.username}/${c.key}`), {shown: true});
@@ -446,31 +502,31 @@ function countVotes(obj) { return obj ? Object.keys(obj).length : 0; }
 function hasVoted(obj) { return obj && obj[currentUser.username]; }
 
 function createPostHTML(p, isSingle = false) {
-    const myL = hasVoted(p.likes), myD = hasVoted(p.dislikes), myR = hasVoted(p.reports);
+    const myL = hasVoted(p.likes), myD = hasVoted(p.dislikes);
     const myS = currentUser?.bookmarks?.[p.id];
     const isMyPost = currentUser && p.authorId === currentUser.username;
     
     return `
         <div class="post" id="post-${p.id}">
-            <div class="post-header" onclick="openProfile('${p.authorId}')">
-                <div class="post-avatar">${emojiParse(p.authorAvatar)}</div>
+            <div class="post-header" onclick="window.openProfile('${p.authorId}')">
+                <div class="post-avatar">${window.emojiParse(p.authorAvatar)}</div>
                 <div>
-                    <div style="font-weight:700;">${emojiParse(p.authorName)} <span style="color:var(--text-muted);font-weight:400;font-size:14px;">@${safe(p.authorId)}</span></div>
+                    <div style="font-weight:700;">${window.emojiParse(p.authorName)} <span style="color:var(--text-muted);font-weight:400;font-size:14px;">@${window.safe(p.authorId)}</span></div>
                     <div style="font-size:12px; color:var(--text-muted);">${new Date(p.timestamp).toLocaleString()} • ${p.age}+</div>
                 </div>
             </div>
-            <div class="post-title" onclick="${!isSingle ? `openPost('${p.id}')` : ''}">${emojiParse(p.title)}</div>
-            <div class="post-content" onclick="${!isSingle ? `openPost('${p.id}')` : ''}">${emojiParse(p.content)}</div>
+            <div class="post-title" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">${window.emojiParse(p.title)}</div>
+            <div class="post-content" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">${window.emojiParse(p.content)}</div>
             <div class="post-actions">
-                <div class="action-btn ${myL ? 'active-like' : ''}" onclick="vote('posts/${p.id}/likes')"><span class="material-symbols-rounded">thumb_up</span> ${countVotes(p.likes)}</div>
-                <div class="action-btn ${myD ? 'active-dislike' : ''}" onclick="vote('posts/${p.id}/dislikes')"><span class="material-symbols-rounded">thumb_down</span> ${countVotes(p.dislikes)}</div>
-                ${!isSingle ? `<div class="action-btn" onclick="openPost('${p.id}')"><span class="material-symbols-rounded">chat_bubble</span></div>` : ''}
+                <div class="action-btn ${myL ? 'active-like' : ''}" onclick="window.vote('posts/${p.id}/likes')"><span class="material-symbols-rounded">thumb_up</span> ${countVotes(p.likes)}</div>
+                <div class="action-btn ${myD ? 'active-dislike' : ''}" onclick="window.vote('posts/${p.id}/dislikes')"><span class="material-symbols-rounded">thumb_down</span> ${countVotes(p.dislikes)}</div>
+                ${!isSingle ? `<div class="action-btn" onclick="window.openPost('${p.id}')"><span class="material-symbols-rounded">chat_bubble</span></div>` : ''}
                 
-                <div class="action-btn" style="margin-left:auto;" onclick="sharePost('${p.id}')"><span class="material-symbols-rounded">share</span></div>
-                <div class="action-btn ${myS ? 'active-save' : ''}" onclick="toggleSave('${p.id}')"><span class="material-symbols-rounded">${myS ? 'bookmark' : 'bookmark_border'}</span></div>
+                <div class="action-btn" style="margin-left:auto;" onclick="window.sharePost('${p.id}')"><span class="material-symbols-rounded">share</span></div>
+                <div class="action-btn ${myS ? 'active-save' : ''}" onclick="window.toggleSave('${p.id}')"><span class="material-symbols-rounded">${myS ? 'bookmark' : 'bookmark_border'}</span></div>
                 ${isMyPost 
-                    ? `<div class="action-btn" style="color:var(--danger);" onclick="deletePost('${p.id}')"><span class="material-symbols-rounded">delete</span></div>` 
-                    : `<div class="action-btn ${myR ? 'active-report' : ''}" onclick="report('posts/${p.id}')"><span class="material-symbols-rounded">flag</span></div>`
+                    ? `<div class="action-btn" style="color:var(--danger);" onclick="window.deletePost('${p.id}')"><span class="material-symbols-rounded">delete</span></div>` 
+                    : `<div class="action-btn" onclick="window.prepareReport('posts/${p.id}')"><span class="material-symbols-rounded">flag</span></div>`
                 }
             </div>
         </div>
@@ -514,69 +570,113 @@ window.vote = async (path) => {
 window.toggleSave = async (pid) => {
     const path = `users/${currentUser.username}/bookmarks/${pid}`;
     const snap = await get(ref(db, path));
-    if(snap.exists()) { await remove(ref(db, path)); showToast("Удалено", "Удалено из закладок", "bookmark_remove"); }
-    else { await set(ref(db, path), true); showToast("Сохранено", "Добавлено в закладки", "bookmark_added"); }
+    if(snap.exists()) { await remove(ref(db, path)); window.showToast("Удалено", "Удалено из закладок", "bookmark_remove"); }
+    else { await set(ref(db, path), true); window.showToast("Сохранено", "Добавлено в закладки", "bookmark_added"); }
 };
 
 window.deletePost = async (pid) => {
-    if(confirm("Точно удалить этот мем?")) { await remove(ref(db, `posts/${pid}`)); await remove(ref(db, `comments/${pid}`)); showToast("Удалено", "Твой мем удален", "delete"); if(currentPostViewId===pid) closePage('page-post'); }
+    if(confirm("Точно удалить этот мем?")) { await remove(ref(db, `posts/${pid}`)); await remove(ref(db, `comments/${pid}`)); window.showToast("Удалено", "Твой мем удален", "delete"); if(currentPostViewId===pid) window.closePage('page-post'); }
 };
 window.deleteComment = async (pid, cid) => {
-    if(confirm("Удалить комментарий?")) { await remove(ref(db, `comments/${pid}/${cid}`)); showToast("Удалено", "Комментарий удален", "delete"); }
+    if(confirm("Удалить комментарий?")) { await remove(ref(db, `comments/${pid}/${cid}`)); window.showToast("Удалено", "Комментарий удален", "delete"); }
 };
-
 window.sharePost = (pid) => {
     const p = allPosts.find(x => x.id === pid);
     if(p) {
         const text = `Зацени мем "${p.title}" от @${p.authorId} в OnlyMemes!\n\n${p.content}`;
-        if(navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast("Скопировано", "Мем скопирован", "content_copy")).catch(()=> showToast("Мем", text, "content_copy"));
-        else showToast("Мем", text, "content_copy");
+        if(navigator.clipboard) navigator.clipboard.writeText(text).then(() => window.showToast("Скопировано", "Мем скопирован", "content_copy")).catch(()=> window.showToast("Мем", text, "content_copy"));
+        else window.showToast("Мем", text, "content_copy");
     }
 };
 
-window.report = async (path) => {
-    const refPath = ref(db, `${path}/reports/${currentUser.username}`);
-    const snap = await get(refPath);
-    if(snap.exists()) return showToast("Уже отправлено", "Вы уже жаловались", "info");
-    await set(refPath, true);
-    const count = Object.keys((await get(ref(db, `${path}/reports`))).val() || {}).length;
-    if(count >= 3) showToast("Удалено", "Скрыто из-за жалоб", "gavel");
-    else showToast("Жалоба", `Осталось до удаления: ${3 - count}`, "flag");
+// СИСТЕМА ЖАЛОБ И ИИ МОДЕРАЦИЯ
+window.prepareReport = (path) => {
+    reportTargetData = path;
+    const radios = document.querySelectorAll('input[name="r_reason"]');
+    radios.forEach(r => r.checked = false);
+    el('report-modal').classList.add('active');
+};
+window.closeReportModal = () => { el('report-modal').classList.remove('active'); reportTargetData = null; };
+
+window.submitReport = async () => {
+    const checked = document.querySelector('input[name="r_reason"]:checked');
+    if(!checked) return window.showToast("Ошибка", "Выберите причину жалобы", "error");
+    const reason = checked.value;
+    const targetPath = reportTargetData;
+    window.closeReportModal();
+
+    const refPath = ref(db, `${targetPath}/reports/${currentUser.username}`);
+    const snapCheck = await get(refPath);
+    if(snapCheck.exists()) return window.showToast("Уже отправлено", "Вы уже жаловались", "info");
+
+    await set(refPath, reason);
+    
+    const objSnap = await get(ref(db, targetPath));
+    const objData = objSnap.val();
+    const reportsObj = objData.reports || {};
+    const count = Object.keys(reportsObj).length;
+    
+    if(count >= 3 && !objData.ai_cleared) {
+        window.showToast("Проверка", "Спасибо! Жалобы отправлены на анализ ИИ.", "psychology");
+        let textToAnalyze = objData.text || ((objData.title || '') + " " + (objData.content || ''));
+        let reasonList = Object.values(reportsObj).join(", ");
+        
+        // Фоновый анализ ИИ
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: `Текст: "${textToAnalyze}". На этот текст поступили жалобы: ${reasonList}. Является ли этот текст откровенным спамом, жестким оскорблением или порнографией? Ответь ТОЛЬКО одним словом YES (если нужно удалить) или NO (если можно оставить).` }]})
+            });
+            const data = await res.json();
+            if(data.choices[0].message.content.trim().toUpperCase().includes("YES")) {
+                await remove(ref(db, targetPath));
+                if(targetPath.startsWith('posts/')) {
+                    const pId = targetPath.split('/')[1];
+                    await remove(ref(db, `comments/${pId}`));
+                    if(currentPostViewId === pId) window.closePage('page-post');
+                }
+            } else {
+                await update(ref(db, targetPath), { ai_cleared: true }); // Защита от спама репортами
+                await set(ref(db, `${targetPath}/reports`), null);
+            }
+        } catch(e) {}
+    } else {
+        window.showToast("Спасибо!", "Спасибо, что помогаете делать сообщество лучше.", "verified_user");
+    }
 };
 
-// Создание
+// СОЗДАНИЕ ПОСТА
 el('btn-publish').onclick = async () => {
     const t = el('post-title').value.trim(), c = el('post-content').value.trim(), a = parseInt(el('post-age').querySelector('.active').dataset.age);
-    if(!t || !c) return showToast("Ошибка", "Заполни поля", "error");
-    showToast("Проверка ИИ", "Мем анализируется...", "psychology");
+    if(!t || !c) return window.showToast("Ошибка", "Заполни поля", "error");
+    window.showToast("Проверка ИИ", "Мем анализируется...", "psychology");
     document.querySelector('[data-tab="feed"]').click();
 
     try {
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST", headers: { "Authorization": `Bearer ${AI_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: `Ты модератор "Только Мемы". Ответь одним словом YES или NO. Заголовок: "${t}". Текст: "${c}"` }]})
+            body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: `Ты модератор соцсети "Только Мемы". Твоя задача пропускать ЛЮБОЙ юмор, постиронию, жизненные истории, забавные наблюдения, цитаты и мемы. Отвечай ТОЛЬКО одним словом YES, если текст хоть немного адекватен и несет развлекательный характер. Отвечай NO, только если это откровенный спам, угрозы или нечитаемый набор букв. Заголовок: "${t}". Текст: "${c}"` }]})
         });
         const data = await res.json();
-        if(!data.choices[0].message.content.trim().toUpperCase().includes("YES")) return showToast("Отказано", "ИИ: Это не мем 😔", "block");
+        if(!data.choices[0].message.content.trim().toUpperCase().includes("YES")) return window.showToast("Отказано", "ИИ отклонил ваш пост", "block");
     } catch(e) {}
 
     await set(push(ref(db, 'posts')), { authorId: currentUser.username, authorName: currentUser.name, authorAvatar: currentUser.avatar, title: t, content: c, age: a, timestamp: Date.now() });
-    showToast("Опубликовано", "Твой мем в ленте!", "rocket_launch"); el('post-title').value = ''; el('post-content').value = '';
+    window.showToast("Опубликовано", "Твой мем в ленте!", "rocket_launch"); el('post-title').value = ''; el('post-content').value = '';
 };
 
-// Редактирование профиля
 window.openEditProfile = () => { el('edit-name').value = currentUser.name || ''; el('edit-bio').value = currentUser.bio || ''; el('edit-profile-modal').classList.add('active'); };
 el('btn-save-profile').onclick = async () => {
     const name = el('edit-name').value.trim(), bio = el('edit-bio').value.trim();
-    if(!name) return showToast("Ошибка", "Имя обязательно", "error");
+    if(!name) return window.showToast("Ошибка", "Имя обязательно", "error");
     await update(ref(db, `users/${currentUser.username}`), { name, bio });
-    showToast("Сохранено", "Профиль обновлен", "check_circle"); el('edit-profile-modal').classList.remove('active');
+    window.showToast("Сохранено", "Профиль обновлен", "check_circle"); el('edit-profile-modal').classList.remove('active');
 };
 
 async function renderMyProfile() {
     if(!currentUser) return;
-    el('my-name').innerHTML = emojiParse(currentUser.name); el('my-user').innerText = "@"+currentUser.username;
-    el('my-avatar').innerHTML = emojiParse(currentUser.avatar); el('my-bio').innerHTML = currentUser.bio ? emojiParse(currentUser.bio) : '';
+    el('my-name').innerHTML = window.emojiParse(currentUser.name); el('my-user').innerText = "@"+currentUser.username;
+    el('my-avatar').innerHTML = window.emojiParse(currentUser.avatar); el('my-bio').innerHTML = currentUser.bio ? window.emojiParse(currentUser.bio) : '';
     
     const myPosts = allPosts.filter(p => p.authorId === currentUser.username);
     el('my-stat-posts').innerText = myPosts.length;
@@ -591,15 +691,15 @@ async function renderMyProfile() {
     el('my-stat-followers').innerText = countVotes((await get(ref(db, `followers/${currentUser.username}`))).val());
 
     let fHTML = ''; const fSnap = await get(ref(db, `following/${currentUser.username}`));
-    if(fSnap.exists()) Object.keys(fSnap.val()).forEach(uid => { const u = allUsers[uid]; if(u) fHTML += `<div class="user-row" onclick="openProfile('${uid}')"><div style="font-size:24px;">${emojiParse(u.avatar)}</div> <div style="font-weight:600;">${emojiParse(u.name)} <span style="font-weight:400;color:var(--text-muted)">@${u.username}</span></div></div>`; });
+    if(fSnap.exists()) Object.keys(fSnap.val()).forEach(uid => { const u = allUsers[uid]; if(u) fHTML += `<div class="user-row" onclick="window.openProfile('${uid}')"><div style="font-size:24px;">${window.emojiParse(u.avatar)}</div> <div style="font-weight:600;">${window.emojiParse(u.name)} <span style="font-weight:400;color:var(--text-muted)">@${u.username}</span></div></div>`; });
     el('my-following').innerHTML = fHTML || '<p style="color:var(--text-muted)">Нет подписок</p>';
 }
 
 window.openProfile = async (uid) => {
     if(currentUser && uid === currentUser.username) return document.querySelector('[data-tab="profile"]').click();
     const u = allUsers[uid]; if(!u) return;
-    el('u-page-name').innerHTML = emojiParse(u.name); el('u-page-user').innerText = "@"+u.username;
-    el('u-page-avatar').innerHTML = emojiParse(u.avatar); el('u-page-bio').innerHTML = u.bio ? emojiParse(u.bio) : '';
+    el('u-page-name').innerHTML = window.emojiParse(u.name); el('u-page-user').innerText = "@"+u.username;
+    el('u-page-avatar').innerHTML = window.emojiParse(u.avatar); el('u-page-bio').innerHTML = u.bio ? window.emojiParse(u.bio) : '';
     
     el('u-stat-followers').innerText = countVotes((await get(ref(db, `followers/${uid}`))).val());
     
@@ -614,19 +714,19 @@ window.openProfile = async (uid) => {
             push(ref(db, `notifications/${uid}`), { text: `@${currentUser.username} подписался на вас`, ts: Date.now(), targetUser: currentUser.username });
             btn.innerText = "Отписаться";
         }
-        openProfile(uid);
+        window.openProfile(uid);
     };
 
     const posts = allPosts.filter(p => p.authorId === uid);
     el('u-page-posts').innerHTML = posts.length ? posts.map(p => createPostHTML(p)).join('') : '<p style="color:var(--text-muted)">Нет постов</p>';
-    openPage('page-user');
+    window.openPage('page-user');
 };
 
 window.openPost = (pid) => {
     currentPostViewId = pid; const p = allPosts.find(x => x.id === pid);
-    if(!p) return closePage('page-post');
+    if(!p) return window.closePage('page-post');
     el('single-post-container').innerHTML = createPostHTML(p, true);
-    loadComments(pid); openPage('page-post');
+    loadComments(pid); window.openPage('page-post');
 };
 
 function loadComments(pid) {
@@ -637,20 +737,19 @@ function loadComments(pid) {
         let html = '';
         snap.forEach(c => {
             const cm = c.val(); cm.id = c.key;
-            if(countVotes(cm.reports) >= 3) return;
             const isMyCom = cm.authorId === currentUser.username;
             html += `
                 <div class="comment ${cm.replyTo ? 'reply' : ''}">
-                    <div class="comment-header" onclick="openProfile('${cm.authorId}')"><span style="font-weight:700;">${emojiParse(cm.authorName)}</span> <span style="color:var(--text-muted);">@${safe(cm.authorId)}</span></div>
-                    ${cm.replyTo ? `<div style="font-size:12px;color:#5856d6;margin-top:4px;">Ответ @${safe(cm.replyTo)}</div>` : ''}
-                    <div class="comment-text">${emojiParse(cm.text)}</div>
+                    <div class="comment-header" onclick="window.openProfile('${cm.authorId}')"><span style="font-weight:700;">${window.emojiParse(cm.authorName)}</span> <span style="color:var(--text-muted);">@${window.safe(cm.authorId)}</span></div>
+                    ${cm.replyTo ? `<div style="font-size:12px;color:#5856d6;margin-top:4px;">Ответ @${window.safe(cm.replyTo)}</div>` : ''}
+                    <div class="comment-text">${window.emojiParse(cm.text)}</div>
                     <div class="comment-actions">
-                        <span class="action-btn ${hasVoted(cm.likes) ? 'active-like' : ''}" onclick="vote('comments/${pid}/${cm.id}/likes')">Лайк (${countVotes(cm.likes)})</span>
-                        <span class="action-btn ${hasVoted(cm.dislikes) ? 'active-dislike' : ''}" onclick="vote('comments/${pid}/${cm.id}/dislikes')">Дизлайк (${countVotes(cm.dislikes)})</span>
-                        <span class="action-btn" onclick="setReply('${cm.authorId}')">Ответить</span>
+                        <span class="action-btn ${hasVoted(cm.likes) ? 'active-like' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/likes')">Лайк (${countVotes(cm.likes)})</span>
+                        <span class="action-btn ${hasVoted(cm.dislikes) ? 'active-dislike' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/dislikes')">Дизлайк (${countVotes(cm.dislikes)})</span>
+                        <span class="action-btn" onclick="window.setReply('${cm.authorId}')">Ответить</span>
                         ${isMyCom 
-                            ? `<span class="action-btn" style="color:var(--danger); margin-left:auto;" onclick="deleteComment('${pid}', '${cm.id}')">Удалить</span>`
-                            : `<span class="action-btn ${hasVoted(cm.reports) ? 'active-report' : ''}" style="margin-left:auto;" onclick="report('comments/${pid}/${cm.id}')">Жалоба</span>`
+                            ? `<span class="action-btn" style="color:var(--danger); margin-left:auto;" onclick="window.deleteComment('${pid}', '${cm.id}')">Удалить</span>`
+                            : `<span class="action-btn" style="margin-left:auto;" onclick="window.prepareReport('comments/${pid}/${cm.id}')">Жалоба</span>`
                         }
                     </div>
                 </div>
