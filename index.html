@@ -1,1 +1,1206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OnlyMemes</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
 
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #101010;
+            --text-muted: #888888;
+            --btn-bg: #101010;
+            --btn-text: #ffffff;
+            --border-color: #e0e0e0;
+            --card-bg: #ffffff;
+            --danger: #ff3b30;
+            --radius: 60px;
+            --radius-sm: 24px;
+        }
+        [data-theme="dark"] {
+            --bg-color: #101010;
+            --text-color: #ffffff;
+            --text-muted: #666666;
+            --btn-bg: #ffffff;
+            --btn-text: #101010;
+            --border-color: #333333;
+            --card-bg: #1a1a1a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Geologica', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; overflow-x: hidden; }
+
+        .hidden { display: none !important; }
+        .ios-emoji { width: 1.25em; height: 1.25em; vertical-align: -0.25em; display: inline-block; pointer-events: none; }
+        
+        button { background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: var(--radius); padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button:active { transform: scale(0.95); opacity: 0.8; }
+        button.text-btn { background: transparent; color: var(--text-color); }
+        button.icon-btn { background: transparent; color: var(--text-color); padding: 8px; }
+        
+        input[type="text"], input[type="password"], input[type="url"], textarea { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px 24px; font-size: 16px; outline: none; transition: border-color 0.3s; width: 100%; }
+        input[type="text"]:focus, input[type="password"]:focus, input[type="url"]:focus, textarea:focus { border-color: var(--text-color); }
+        textarea { border-radius: var(--radius-sm); resize: none; min-height: 100px; }
+
+        .editable-content { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px 24px; font-size: 16px; min-height: 100px; outline: none; transition: border-color 0.3s; word-wrap: break-word; white-space: pre-wrap; margin-bottom: 8px; }
+        .editable-content:focus { border-color: var(--text-color); }
+        .editable-content:empty:before { content: attr(placeholder); color: var(--text-muted); pointer-events: none; }
+        
+        .char-counter { font-size: 12px; color: var(--text-muted); text-align: right; margin-bottom: 16px; font-weight: 600; transition: color 0.3s; }
+
+        #format-toolbar { position: absolute; background: var(--btn-bg); padding: 4px; border-radius: var(--radius-sm); display: flex; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transform: translate(-50%, -100%); margin-top: -12px; z-index: 4000; transition: opacity 0.2s; pointer-events: auto; }
+        #format-toolbar button { background: transparent; color: var(--btn-text); padding: 8px; min-width: 40px; }
+        #format-toolbar button:hover { background: rgba(255,255,255,0.1); }
+        [data-theme="dark"] #format-toolbar button:hover { background: rgba(0,0,0,0.3); }
+
+        input[type="checkbox"], input[type="radio"] { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; position: relative; display: inline-block; vertical-align: middle; transition: all 0.2s ease; margin: 0; }
+        input[type="checkbox"] { border-radius: 8px; }
+        input[type="radio"] { border-radius: 50%; }
+        input[type="checkbox"]:checked, input[type="radio"]:checked { background: var(--text-color); border-color: var(--text-color); }
+        input[type="checkbox"]:checked::after { content: ''; position: absolute; top: 3px; left: 7px; width: 6px; height: 11px; border: solid var(--bg-color); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        input[type="radio"]:checked::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background: var(--bg-color); }
+
+        .screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 80px; background: var(--bg-color); transition: opacity 0.4s, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10; }
+        .screen.slide-out { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; background: var(--bg-color); z-index: 50; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(100%); padding-bottom: 20px;}
+        .page.active { transform: translateX(0); }
+        .page-header { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-color); z-index: 60; gap: 16px; font-weight: 700; font-size: 18px;}
+
+        .auth-container { max-width: 400px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+        .age-selector { display: flex; background: var(--border-color); border-radius: var(--radius); padding: 4px; margin-bottom: 16px; }
+        .age-option { flex: 1; text-align: center; padding: 12px 0; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
+        .age-option.active { background: var(--bg-color); color: var(--text-color); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .age-option.disabled { opacity: 0.5; pointer-events: none; background: transparent !important; box-shadow: none !important; color: var(--text-muted) !important; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-color); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 12px 0 24px; z-index: 40; }
+        .nav-item { color: var(--text-muted); cursor: pointer; transition: 0.3s; padding: 8px; }
+        .nav-item.active { color: var(--text-color); transform: scale(1.1); }
+
+        .feed-container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .post { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 20px; margin-bottom: 20px; transition: 0.3s; }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; }
+        .post-avatar { font-size: 28px; background: var(--border-color); width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .post-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        
+        .post-content-wrap { margin-bottom: 16px; cursor: pointer; }
+        .post-content { font-size: 15px; white-space: pre-wrap; word-break: break-word; }
+        .post-content.truncated { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+        .read-more-btn { margin-top: 4px; color: var(--text-color); font-size: 15px; }
+
+        .post-actions { display: flex; gap: 16px; border-top: 1px solid var(--border-color); padding-top: 12px; }
+        .action-btn { display: flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+        .action-btn.active-like { color: #ff2d55; }
+        .action-btn.active-dislike { color: #5856d6; }
+        .action-btn.active-save { color: #ffcc00; }
+
+        .comment { padding: 8px 8px 8px 12px; margin-bottom: 16px; border-left: 2px solid var(--border-color); position: relative; border-radius: 0 8px 8px 0; transition: background-color 0.5s ease; }
+        .comment.reply { margin-left: 20px; border-left-color: #5856d6; }
+        .comment-header { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .comment-text { font-size: 14px; margin: 4px 0; }
+        .comment-actions { display: flex; gap: 16px; font-size: 14px; margin-top: 8px;}
+
+        .prof-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-top: 24px; }
+        .prof-tab { flex: 1; text-align: center; padding: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; font-size: 14px;}
+        .prof-tab.active { color: var(--text-color); border-bottom-color: var(--text-color); }
+        .user-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: var(--text-color); color: var(--bg-color); padding: 16px; border-radius: var(--radius); display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideDown 0.3s ease, fadeOut 0.3s ease 3.7s forwards; pointer-events: auto; cursor: pointer; }
+        
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px; }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+        .modal { background: var(--bg-color); width: 100%; max-width: 500px; max-height: 80vh; padding: 24px; border-radius: var(--radius-sm); transform: scale(0.9); transition: 0.3s; display: flex; flex-direction: column; text-align: left; overflow-y: auto; }
+        .overlay.active .modal { transform: scale(1); }
+
+        .report-label { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
+        .report-label:hover { border-color: var(--text-color); }
+
+        #ptr-indicator { display: flex; justify-content: center; align-items: center; height: 0; overflow: hidden; color: var(--text-muted); }
+        
+        /* Рекламный блок */
+        .ad-media-container { position: relative; margin-top: 12px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
+        .ad-media-container img { width: 100%; display: block; object-fit: cover; }
+        .ad-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.8); color: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; pointer-events: none; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .rotating { animation: spin 0.8s linear infinite !important; }
+
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <script>
+        if(localStorage.getItem('om_theme') === 'dark') document.body.dataset.theme = 'dark';
+    </script>
+
+    <div id="toast-container"></div>
+
+    <!-- ЭКРАН БАНА ПО ЖЕЛЕЗУ -->
+    <div id="ban-screen" class="screen hidden" style="z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;">
+        <span class="material-symbols-rounded" style="font-size:80px; color:var(--danger); margin-bottom: 16px;">block</span>
+        <h1 style="margin-bottom:16px;">Ваш аккаунт заблокирован</h1>
+        <p style="color:var(--text-muted); margin-bottom:32px; max-width: 300px;">Ваше устройство было ограничено администрацией за нарушение правил сообщества.</p>
+        <button onclick="window.open('https://t.me/svyaz_reqdev_bot', '_blank')" style="width: 100%; max-width: 300px;">Связаться с поддержкой</button>
+    </div>
+
+    <!-- Тулбар форматирования -->
+    <div id="format-toolbar" class="hidden">
+        <button onmousedown="window.formatText('bold', event)"><span class="material-symbols-rounded">format_bold</span></button>
+        <button onmousedown="window.formatText('italic', event)"><span class="material-symbols-rounded">format_italic</span></button>
+        <button onmousedown="window.formatText('underline', event)"><span class="material-symbols-rounded">format_underlined</span></button>
+        <button onmousedown="window.formatText('removeFormat', event)"><span class="material-symbols-rounded">format_clear</span></button>
+    </div>
+
+    <!-- Кастомный Alert / Confirm (Попап) -->
+    <div class="overlay" id="dialog-modal">
+        <div class="modal" style="max-width: 350px;">
+            <h2 id="dialog-title" style="margin-bottom: 16px; text-align:center;">Внимание</h2>
+            <p id="dialog-text" style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; text-align:center;"></p>
+            <div style="display:flex; gap:12px;">
+                <button id="btn-dialog-cancel" class="text-btn" style="flex:1;">Отмена</button>
+                <button id="btn-dialog-confirm" style="flex:1; background:var(--danger); color:#fff;">Ок</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Редактирование профиля -->
+    <div class="overlay" id="edit-profile-modal">
+        <div class="modal">
+            <h2 style="margin-bottom: 24px; text-align:center;">Редактировать профиль</h2>
+            <input type="text" id="edit-name" placeholder="Твое имя" maxlength="30" style="margin-bottom: 16px;">
+            <textarea id="edit-bio" placeholder="Расскажи о себе (до 100 симв.)" maxlength="100" style="margin-bottom: 24px; min-height: 80px;"></textarea>
+            <button id="btn-save-profile" style="width:100%; margin-bottom: 8px;">Сохранить</button>
+            <button class="text-btn" onclick="window.el('edit-profile-modal').classList.remove('active')" style="width:100%;">Отмена</button>
+        </div>
+    </div>
+
+    <!-- Создание рекламы (Для админа) -->
+    <div class="overlay" id="create-ad-modal">
+        <div class="modal">
+            <h2 style="margin-bottom: 24px; text-align:center;">Создать рекламу</h2>
+            <input type="text" id="ad-title" placeholder="Заголовок рекламы" style="margin-bottom: 16px;">
+            <input type="url" id="ad-media" placeholder="Ссылка на фото/гиф (https://...)" style="margin-bottom: 16px;">
+            <input type="url" id="ad-link" placeholder="Ссылка для перехода (https://...)" style="margin-bottom: 24px;">
+            <button id="btn-publish-ad" style="width:100%; margin-bottom: 8px;">Опубликовать рекламу</button>
+            <button class="text-btn" onclick="window.el('create-ad-modal').classList.remove('active')" style="width:100%;">Отмена</button>
+        </div>
+    </div>
+
+    <!-- Система жалоб -->
+    <div class="overlay" id="report-modal">
+        <div class="modal">
+            <h2 style="margin-bottom:16px; text-align:center;">Причина жалобы</h2>
+            <div id="report-options" style="margin-bottom: 20px;">
+                <label class="report-label"><input type="radio" name="r_reason" value="Спам"> <span>Спам / Реклама</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="Оскорбление"> <span>Оскорбление / Токсичность</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="Не формат"> <span>Не формат / Не мем</span></label>
+                <label class="report-label"><input type="radio" name="r_reason" value="18+"> <span>Запрещенный 18+ контент</span></label>
+            </div>
+            <button onclick="window.submitReport()" style="width:100%; background:var(--danger); margin-bottom:8px;">Отправить жалобу</button>
+            <button class="text-btn" onclick="window.closeReportModal()" style="width:100%;">Отмена</button>
+        </div>
+    </div>
+
+    <!-- ВХОД / РЕГИСТРАЦИЯ -->
+    <div id="auth-screen" class="screen">
+        <div class="auth-container">
+            <h1 style="font-size:36px; margin-bottom: 8px;">OnlyMemes <span class="static-emoji">🎭</span></h1>
+            <p style="color:var(--text-muted); margin-bottom: 32px;">Только мемы. Ничего лишнего.</p>
+            
+            <div id="login-form">
+                <input type="text" id="login-user" placeholder="@username" style="margin-bottom: 12px;">
+                <input type="password" id="login-pass" placeholder="Пароль" style="margin-bottom: 16px;">
+                <button id="btn-login" style="width:100%;">Войти</button>
+                <button class="text-btn" onclick="window.toggleAuth()" style="width:100%; margin-top: 16px;">Создать аккаунт</button>
+            </div>
+
+            <div id="reg-form" class="hidden">
+                <div id="reg-avatar" onclick="window.nextAvatar()" style="font-size: 64px; cursor: pointer; transition: 0.2s; height: 80px; display:flex; justify-content:center; align-items:center;"></div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Нажми, чтобы сменить смайл</p>
+                
+                <input type="text" id="reg-name" placeholder="Имя" style="margin-bottom: 12px;">
+                <input type="text" id="reg-user" placeholder="@username" style="margin-bottom: 12px;">
+                <input type="password" id="reg-pass" placeholder="Пароль" style="margin-bottom: 12px;">
+                <input type="password" id="reg-pass2" placeholder="Повторите пароль" style="margin-bottom: 16px;">
+                
+                <div class="age-selector" id="reg-age">
+                    <div class="age-option active" data-age="6"><span class="static-emoji">👶</span> 6+</div>
+                    <div class="age-option" data-age="14"><span class="static-emoji">👦</span> 14+</div>
+                    <div class="age-option" data-age="18"><span class="static-emoji">👨</span> 18+</div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px; text-align:left;">
+                    <input type="checkbox" id="reg-policy">
+                    <span style="font-size: 14px;">Согласен с <u style="cursor:pointer;" onclick="window.openPage('page-policy')">политикой конфиденциальности</u></span>
+                </div>
+
+                <button id="btn-reg" style="width:100%;">Создать аккаунт</button>
+                <button class="text-btn" onclick="window.toggleAuth()" style="width:100%; margin-top: 16px;">Уже есть аккаунт? Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ЭКРАН -->
+    <div id="main-screen" class="screen slide-out">
+        <div id="tab-feed">
+            <div id="ptr-indicator">
+                <span class="material-symbols-rounded ptr-icon" style="font-size: 28px;">refresh</span>
+            </div>
+
+            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display:flex; flex-direction:column; gap:12px;">
+                <input type="text" id="search-input" placeholder="Поиск мемов..." style="padding: 12px 20px; font-size:14px; border-radius: 30px;">
+                <div style="display:flex; gap:12px;">
+                    <button class="filter-btn active" onclick="window.setFeedSort('new', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--btn-bg); color:var(--btn-text); transition:0.2s;">Новые</button>
+                    <button class="filter-btn" onclick="window.setFeedSort('top', this)" style="flex:1; padding:8px; font-size:14px; border-radius:30px; background:var(--border-color); color:var(--text-color); transition:0.2s;">Топ <span class="static-emoji" style="margin-left:4px;">🔥</span></button>
+                </div>
+            </div>
+            <div class="feed-container" id="feed-list"></div>
+        </div>
+
+        <div id="tab-create" class="hidden">
+            <div class="page-header" style="justify-content: space-between;">
+                <span>Новый мем</span>
+                <button id="btn-publish" style="padding: 8px 16px; font-size: 14px;">Опубликовать</button>
+            </div>
+            <div class="feed-container">
+                <input type="text" id="post-title" maxlength="35" placeholder="Оглавление (до 35 симв.)" style="font-weight:bold; margin-bottom:12px;">
+                
+                <div id="post-content" class="editable-content" contenteditable="true" placeholder="Пиши свой мем здесь..."></div>
+                <div id="char-counter" class="char-counter">0 / 900</div>
+                
+                <p style="margin-bottom: 8px; font-size: 14px; font-weight: 600;">Возраст:</p>
+                <div class="age-selector" id="post-age">
+                    <div class="age-option active" data-age="6"><span class="static-emoji">👶</span> 6+</div>
+                    <div class="age-option" data-age="14"><span class="static-emoji">👦</span> 14+</div>
+                    <div class="age-option" data-age="18"><span class="static-emoji">👨</span> 18+</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="hidden">
+            <div class="page-header" style="justify-content: space-between;">
+                <span>Профиль</span>
+                <div style="display:flex; gap:8px;">
+                    <button class="icon-btn" onclick="window.shareProfile(currentUser.username)"><span class="material-symbols-rounded">share</span></button>
+                    <button class="icon-btn" onclick="window.toggleTheme()"><span class="material-symbols-rounded">dark_mode</span></button>
+                </div>
+            </div>
+            <div class="feed-container" style="text-align: center;">
+                <div id="my-avatar" style="font-size: 80px; margin-bottom: 16px;"></div>
+                <h2 id="my-name">Имя</h2>
+                <p id="my-user" style="color: var(--text-muted); margin-bottom: 8px;">@user</p>
+                <p id="my-bio" style="font-size: 14px; margin-bottom: 24px; white-space: pre-wrap; word-break: break-word;"></p>
+                
+                <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 24px;">
+                    <div><h3 id="my-stat-posts">0</h3><p style="font-size: 12px; color: var(--text-muted);">Постов</p></div>
+                    <div><h3 id="my-stat-followers">0</h3><p style="font-size: 12px; color: var(--text-muted);">Подписчиков</p></div>
+                </div>
+                
+                <div style="display:flex; gap:12px; margin-bottom: 12px;">
+                    <button onclick="window.openEditProfile()" style="flex:1; background:transparent; border:1px solid var(--border-color); color:var(--text-color);">Редактировать</button>
+                    <button onclick="window.customConfirm('Выход', 'Вы точно хотите выйти из аккаунта?', 'Выйти', window.logout)" style="flex:1; background:var(--danger); color:#fff;">Выйти</button>
+                </div>
+                
+                <button id="btn-admin-ad" class="hidden" onclick="window.openAdModal()" style="width:100%; background:#5856d6; margin-bottom: 24px;">Создать рекламу</button>
+
+                <div class="prof-tabs">
+                    <div class="prof-tab active" data-target="my-posts">Посты</div>
+                    <div class="prof-tab" data-target="my-saved">Закладки</div>
+                    <div class="prof-tab" data-target="my-likes">Лайки</div>
+                    <div class="prof-tab" data-target="my-following">Подписки</div>
+                </div>
+                <div id="my-posts" class="prof-content feed-container" style="padding: 20px 0;"></div>
+                <div id="my-saved" class="prof-content feed-container hidden" style="padding: 20px 0;"></div>
+                <div id="my-likes" class="prof-content feed-container hidden" style="padding: 20px 0;"></div>
+                <div id="my-following" class="prof-content feed-container hidden" style="padding: 20px 0;"></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" data-tab="feed"><span class="material-symbols-rounded">home</span></div>
+            <div class="nav-item" data-tab="create"><span class="material-symbols-rounded">add_circle</span></div>
+            <div class="nav-item" data-tab="profile"><span class="material-symbols-rounded">person</span></div>
+            <div class="nav-item" onclick="window.open('https://t.me/svyaz_reqdev_bot', '_blank')"><span class="material-symbols-rounded">support_agent</span></div>
+        </div>
+    </div>
+
+    <!-- ВЛОЖЕННЫЕ ЭКРАНЫ -->
+
+    <div id="page-policy" class="page">
+        <div class="page-header">
+            <button class="icon-btn" onclick="window.closePage('page-policy')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <span>Документ</span>
+        </div>
+        <div class="feed-container" style="padding: 32px 20px;">
+            <h1 style="margin-bottom:24px; font-size:26px;">Политика конфиденциальности</h1>
+            <div style="font-size:15px; line-height:1.6; color:var(--text-color);">
+                <p style="margin-bottom:16px;"><strong>1. Приветствие и суть</strong><br> Добро пожаловать в OnlyMemes! Наша цель — развлекательный контент. Ваши данные защищены и используются исключительно внутри сети.</p>
+                <p style="margin-bottom:16px;"><strong>2. Формат контента</strong><br> Здесь разрешено публиковать юмор, шутки, мемы, забавные наблюдения и цитаты. Любые угрозы, спам и незаконный 18+ контент запрещены.</p>
+                <p style="margin-bottom:16px;"><strong>3. Модерация ИИ</strong><br> При публикации нейросеть анализирует ваш пост. Кроме того, при накоплении 3-х жалоб от разных людей на контент, он снова отправляется на проверку ИИ, который принимает решение об удалении.</p>
+                <p style="margin-bottom:16px;"><strong>4. Хранение данных</strong><br> Мы храним ваш никнейм, пароль и мемы в облачной базе Firebase.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-user" class="page">
+        <div class="page-header">
+            <button class="icon-btn" onclick="window.closePage('page-user')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <span id="u-page-title" style="flex:1;">Профиль</span>
+            <button class="icon-btn" onclick="window.shareProfile(currentUserViewId)"><span class="material-symbols-rounded">share</span></button>
+        </div>
+        <div class="feed-container" style="text-align: center;">
+            <div id="u-page-avatar" style="font-size: 80px; margin-bottom: 16px;"></div>
+            <h2 id="u-page-name">Имя</h2>
+            <p id="u-page-user" style="color: var(--text-muted); margin-bottom: 8px;">@user</p>
+            <p id="u-page-bio" style="font-size: 14px; margin-bottom: 24px; white-space: pre-wrap; word-break: break-word;"></p>
+            <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 24px;">
+                <div><h3 id="u-stat-followers">0</h3><p style="font-size: 12px; color: var(--text-muted);">Подписчиков</p></div>
+            </div>
+            <button id="btn-follow" style="width:100%; margin-bottom:12px;">Подписаться</button>
+            
+            <div id="admin-user-controls" class="hidden" style="display:flex; gap:12px; margin-bottom:24px;">
+                <button onclick="window.adminBanUser()" style="flex:1; background:#000; color:#fff; border: 1px solid var(--danger);">Бан по железу</button>
+                <button onclick="window.adminDeleteUser()" style="flex:1; background:var(--danger); color:#fff;">Удалить юзера</button>
+            </div>
+
+            <h3 style="text-align: left; margin-bottom: 16px;">Посты</h3>
+            <div id="u-page-posts" style="text-align: left;"></div>
+        </div>
+    </div>
+
+    <div id="page-post" class="page">
+        <div class="page-header">
+            <button class="icon-btn" onclick="window.closePage('page-post')"><span class="material-symbols-rounded">arrow_back</span></button>
+            <span>Мем</span>
+        </div>
+        <div class="feed-container" id="single-post-container"></div>
+        <div class="feed-container" style="padding-top: 0;">
+            <h3 style="margin-bottom: 16px;">Комментарии</h3>
+            <div style="display:flex; gap:8px; margin-bottom:20px;">
+                <input type="text" id="com-input" placeholder="Написать комментарий...">
+                <button class="icon-btn" id="btn-send-com"><span class="material-symbols-rounded">send</span></button>
+            </div>
+            <div id="single-comments-list"></div>
+        </div>
+    </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, get, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB6KVgGKSPFWdIweh_tY8oWAYIBQk9B34I",
+  authDomain: "onlymems-fe4e6.firebaseapp.com",
+  databaseURL: "https://onlymems-fe4e6-default-rtdb.firebaseio.com",
+  projectId: "onlymems-fe4e6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const AI_KEY = "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";
+const AI_MODEL = "google/gemma-4-31b-it:free";
+
+let currentUser = null, allPosts = [], allUsers = {}, appLoadedTime = Date.now();
+let emojis = ["👽","🤡","💩","💀","🤓","😎","👾","👻","👺","😺","🐶","🐸"], curAvatar = 0;
+let currentPostViewId = null, currentUserViewId = null, replyToCommentId = null, feedSort = 'new';
+let reportTargetData = null; 
+let usersLoaded = false, postsLoaded = false, initialDeepLinkHandled = false;
+
+// АДМИН СИСТЕМА
+let isAdmin = localStorage.getItem('om_admin') === 'true';
+
+const el = id => document.getElementById(id);
+window.el = el; 
+
+window.safe = (str) => { return str ? str.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; };
+
+window.safeHTML = (str) => {
+    if(!str) return '';
+    let s = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    s = s.replace(/&lt;div&gt;/gi, '<br>').replace(/&lt;\/div&gt;/gi, '');
+    s = s.replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+    s = s.replace(/&lt;b&gt;/gi, '<b>').replace(/&lt;\/b&gt;/gi, '</b>');
+    s = s.replace(/&lt;i&gt;/gi, '<i>').replace(/&lt;\/i&gt;/gi, '</i>');
+    s = s.replace(/&lt;u&gt;/gi, '<u>').replace(/&lt;\/u&gt;/gi, '</u>');
+    s = s.replace(/(<br>\s*){3,}/gi, '<br><br>');
+    s = s.replace(/^(<br>)+|(<br>)+$/gi, '');
+    return s.trim();
+};
+
+window.emojiParse = (text) => {
+    if(!text) return '';
+    let safeStr = text; 
+    try {
+        const reg = new RegExp('\\p{RGI_Emoji}', 'vg');
+        return safeStr.replace(reg, m => `<img src="https://emojicdn.elk.sh/${encodeURIComponent(m)}?style=apple" class="ios-emoji" alt="${m}">`);
+    } catch(e) {
+        const fb = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g;
+        return safeStr.replace(fb, m => `<img src="https://emojicdn.elk.sh/${encodeURIComponent(m)}?style=apple" class="ios-emoji" alt="${m}">`);
+    }
+};
+
+window.onload = async () => {
+    document.querySelectorAll('.static-emoji').forEach(e => { e.innerHTML = window.emojiParse(window.safe(e.innerText)); e.classList.remove('static-emoji'); });
+    el('reg-avatar').innerHTML = window.emojiParse(emojis[0]);
+    
+    // Проверка админ-ссылки
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('xns82') === 'true') {
+        isAdmin = true;
+        localStorage.setItem('om_admin', 'true');
+        urlParams.delete('xns82');
+        window.history.replaceState({}, document.title, window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : ''));
+        window.showToast("Успех", "Режим администратора активирован", "admin_panel_settings");
+    }
+
+    if(isAdmin) {
+        el('btn-admin-ad').classList.remove('hidden');
+    }
+
+    // Блокировка по железу (проверка)
+    if(localStorage.getItem('om_banned') === 'true') {
+        return window.blockDevice();
+    }
+
+    const savedDeviceAge = localStorage.getItem('om_device_age');
+    if(savedDeviceAge) {
+        document.querySelectorAll('#reg-age .age-option').forEach(opt => {
+            if(opt.dataset.age === savedDeviceAge) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+                opt.classList.add('disabled');
+                opt.innerHTML = `<span class="static-emoji">${window.emojiParse('🚫')}</span> ${opt.dataset.age}+`;
+            }
+        });
+    }
+
+    const saved = localStorage.getItem('om_user');
+    if(saved) {
+        // Проверка бана перед входом
+        const banSnap = await get(ref(db, `banned_devices/${saved}`));
+        if(banSnap.exists()) {
+            window.blockDevice();
+            return;
+        }
+
+        const snap = await get(ref(db, `users/${saved}`));
+        if(snap.exists()) loginSuccess(snap.val()); 
+    }
+};
+
+window.blockDevice = () => {
+    localStorage.setItem('om_banned', 'true');
+    el('ban-screen').classList.remove('hidden');
+    el('auth-screen').classList.add('hidden');
+    el('main-screen').classList.add('hidden');
+};
+
+window.showToast = (title, text, icon = "info", action = null) => {
+    const cont = el('toast-container'), t = document.createElement('div'); t.className = 'toast';
+    t.innerHTML = `<span class="material-symbols-rounded toast-icon">${icon}</span><div><div style="font-weight:700;font-size:14px;">${title}</div><div style="font-size:12px;opacity:0.9;">${text}</div></div>`;
+    if(action) { t.onclick = () => { action(); t.remove(); }; }
+    cont.appendChild(t); setTimeout(() => t.remove(), 4000);
+};
+
+el('post-content').addEventListener('input', function() {
+    let text = this.innerText || "";
+    let len = text.trim().length;
+    el('char-counter').innerText = len + " / 900";
+    el('char-counter').style.color = len > 900 ? 'var(--danger)' : 'var(--text-muted)';
+});
+
+document.addEventListener('selectionchange', () => {
+    const selection = window.getSelection();
+    const editor = el('post-content');
+    const toolbar = el('format-toolbar');
+
+    if (!selection.rangeCount || selection.isCollapsed || !editor || !editor.contains(selection.anchorNode)) {
+        toolbar.classList.add('hidden');
+        return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    toolbar.classList.remove('hidden');
+    toolbar.style.top = `${rect.top + window.scrollY}px`;
+    toolbar.style.left = `${rect.left + (rect.width / 2)}px`;
+});
+
+window.formatText = (cmd, e) => {
+    e.preventDefault(); 
+    document.execCommand(cmd, false, null);
+};
+
+window.updateAgeOptions = () => {
+    if(!currentUser) return;
+    const ageOptions = document.querySelectorAll('#post-age .age-option');
+    let maxAllowed = 6;
+
+    ageOptions.forEach(opt => {
+        const a = parseInt(opt.dataset.age);
+        if (a > currentUser.age) {
+            opt.classList.add('disabled');
+            opt.innerHTML = `<span class="static-emoji">${window.emojiParse('🚫')}</span> ${a}+`;
+        } else {
+            opt.classList.remove('disabled');
+            maxAllowed = Math.max(maxAllowed, a);
+            if(a===6) opt.innerHTML = `<span class="static-emoji">${window.emojiParse('👶')}</span> 6+`;
+            if(a===14) opt.innerHTML = `<span class="static-emoji">${window.emojiParse('👦')}</span> 14+`;
+            if(a===18) opt.innerHTML = `<span class="static-emoji">${window.emojiParse('👨')}</span> 18+`;
+        }
+    });
+
+    const activeOpt = document.querySelector('#post-age .age-option.active');
+    if(activeOpt && parseInt(activeOpt.dataset.age) > currentUser.age) {
+        activeOpt.classList.remove('active');
+        document.querySelector(`#post-age .age-option[data-age="${maxAllowed}"]`).classList.add('active');
+    }
+};
+
+window.customConfirm = (title, text, btnText, onConfirm) => {
+    el('dialog-title').innerText = title;
+    el('dialog-text').innerText = text;
+    el('btn-dialog-confirm').innerText = btnText;
+    
+    el('btn-dialog-confirm').onclick = null;
+    el('btn-dialog-cancel').onclick = null;
+
+    el('dialog-modal').classList.add('active');
+
+    el('btn-dialog-confirm').onclick = () => {
+        el('dialog-modal').classList.remove('active');
+        if (onConfirm) onConfirm();
+    };
+    el('btn-dialog-cancel').onclick = () => {
+        el('dialog-modal').classList.remove('active');
+    };
+};
+
+window.updateURL = (params) => {
+    const url = new URL(window.location);
+    for(let key in params) url.searchParams.set(key, params[key]);
+    window.history.pushState({}, '', url);
+};
+window.clearURL = () => {
+    const url = new URL(window.location); url.search = ''; window.history.pushState({}, '', url);
+};
+window.checkDeepLink = () => {
+    if(initialDeepLinkHandled || !usersLoaded || !postsLoaded) return;
+    initialDeepLinkHandled = true;
+    const params = new URLSearchParams(window.location.search);
+    if(params.has('post')) window.openPost(params.get('post'), true);
+    else if(params.has('user')) window.openProfile(params.get('user'), true);
+};
+
+window.addEventListener('popstate', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('post')) window.openPost(params.get('post'), true);
+    else if (params.has('user')) window.openProfile(params.get('user'), true);
+    else { window.closePage('page-post', true); window.closePage('page-user', true); }
+});
+
+window.toggleAuth = () => { el('login-form').classList.toggle('hidden'); el('reg-form').classList.toggle('hidden'); };
+
+window.toggleTheme = () => { 
+    const t = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.body.dataset.theme = t; 
+    localStorage.setItem('om_theme', t);
+};
+
+window.nextAvatar = () => { curAvatar = (curAvatar+1)%emojis.length; el('reg-avatar').innerHTML = window.emojiParse(window.safe(emojis[curAvatar])); };
+window.openPage = (id) => el(id).classList.add('active');
+window.closePage = (id, noPush = false) => { el(id).classList.remove('active'); currentPostViewId = null; if(!noPush) window.clearURL(); };
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if(btn.hasAttribute('onclick')) return; 
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['feed','create','profile'].forEach(t => el('tab-'+t).classList.add('hidden'));
+        el('tab-'+btn.dataset.tab).classList.remove('hidden');
+        if(btn.dataset.tab === 'profile') renderMyProfile();
+        if(btn.dataset.tab === 'create') window.updateAgeOptions();
+    }); 
+});
+
+document.querySelectorAll('.prof-tab').forEach(t => {
+    t.onclick = () => {
+        document.querySelectorAll('.prof-tab').forEach(b => b.classList.remove('active'));
+        t.classList.add('active');
+        document.querySelectorAll('.prof-content').forEach(c => c.classList.add('hidden'));
+        el(t.dataset.target).classList.remove('hidden');
+    }
+});
+
+document.querySelectorAll('.age-selector .age-option').forEach(opt => {
+    opt.onclick = (e) => { 
+        if(e.currentTarget.classList.contains('disabled')) return;
+        e.currentTarget.parentNode.querySelectorAll('.age-option').forEach(o => o.classList.remove('active')); 
+        e.currentTarget.classList.add('active'); 
+    }
+});
+
+el('btn-reg').onclick = async () => {
+    const name = el('reg-name').value.trim(), user = el('reg-user').value.trim().replace('@','').toLowerCase();
+    const p1 = el('reg-pass').value, p2 = el('reg-pass2').value, age = parseInt(el('reg-age').querySelector('.active').dataset.age);
+    if(!name || !user || !p1) return window.showToast("Ошибка", "Заполните поля", "error");
+    if(p1 !== p2) return window.showToast("Ошибка", "Пароли не совпадают", "error");
+    if(!el('reg-policy').checked) return window.showToast("Ошибка", "Примите политику", "error");
+    
+    const deviceAge = localStorage.getItem('om_device_age');
+    if (deviceAge && parseInt(deviceAge) !== age) {
+        return window.showToast("Ошибка", `На этом устройстве можно создать аккаунт только для ${deviceAge}+`, "block");
+    }
+
+    const snap = await get(ref(db, `users/${user}`));
+    if(snap.exists()) return window.showToast("Ошибка", "Юзернейм занят", "error");
+    
+    const uData = { name, username: user, password: p1, avatar: emojis[curAvatar], age, bio: '' };
+    await set(ref(db, `users/${user}`), uData);
+    localStorage.setItem('om_device_age', age);
+    
+    loginSuccess(uData);
+};
+
+el('btn-login').onclick = async () => {
+    const user = el('login-user').value.trim().replace('@','').toLowerCase(), pass = el('login-pass').value;
+    if(!user || !pass) return;
+    
+    // Проверка бана перед входом
+    const banSnap = await get(ref(db, `banned_devices/${user}`));
+    if(banSnap.exists()) {
+        window.blockDevice();
+        return;
+    }
+
+    const snap = await get(ref(db, `users/${user}`));
+    if(!snap.exists() || snap.val().password !== pass) return window.showToast("Ошибка", "Неверные данные", "error");
+    loginSuccess(snap.val());
+};
+
+window.logout = () => { currentUser = null; localStorage.removeItem('om_user'); el('main-screen').classList.add('slide-out'); el('auth-screen').classList.remove('slide-out'); window.clearURL(); };
+
+async function loginSuccess(user) {
+    currentUser = user; localStorage.setItem('om_user', user.username);
+    el('auth-screen').classList.add('slide-out'); el('main-screen').classList.remove('slide-out');
+    window.updateAgeOptions();
+    listenData();
+}
+
+function listenData() {
+    onValue(ref(db, 'banned_devices'), snap => {
+        if(snap.exists() && currentUser && snap.val()[currentUser.username]) {
+            window.blockDevice();
+        }
+    });
+
+    onValue(ref(db, 'users'), snap => {
+        if(snap.exists()) {
+            allUsers = snap.val();
+            if(currentUser) { currentUser = allUsers[currentUser.username]; renderMyProfile(); renderFeed(); if(currentPostViewId) window.openPost(currentPostViewId, true); }
+        }
+        usersLoaded = true; window.checkDeepLink();
+    });
+    
+    onValue(ref(db, 'posts'), snap => {
+        allPosts = [];
+        if(snap.exists()) {
+            snap.forEach(c => { 
+                const p = c.val(); p.id = c.key; 
+                // Рекламу видят все, обычные посты по возрасту
+                if((currentUser && currentUser.age >= p.age) || p.isAd) allPosts.push(p); 
+            });
+        }
+        renderFeed(); renderMyProfile(); if(currentPostViewId) window.openPost(currentPostViewId, true);
+        postsLoaded = true; window.checkDeepLink();
+    });
+
+    onValue(ref(db, `notifications/${currentUser.username}`), snap => {
+        if(!snap.exists()) return;
+        snap.forEach(c => {
+            const n = c.val();
+            if(n.ts > appLoadedTime && !n.shown) {
+                window.showToast("Уведомление", window.emojiParse(window.safe(n.text)), "notifications", () => {
+                    if(n.targetUser) window.openProfile(n.targetUser); if(n.targetPost) window.openPost(n.targetPost);
+                });
+                update(ref(db, `notifications/${currentUser.username}/${c.key}`), {shown: true});
+            }
+        });
+    });
+}
+
+function countVotes(obj) { return obj ? Object.keys(obj).length : 0; }
+function hasVoted(obj) { return obj && obj[currentUser.username]; }
+
+function createPostHTML(p, isSingle = false) {
+    // Если это Рекламный пост
+    if(p.isAd) {
+        return `
+            <div class="post" id="post-${p.id}" onclick="window.open('${window.safe(p.targetUrl)}', '_blank')" style="cursor:pointer; padding:0; overflow:hidden;">
+                <div style="padding: 20px;">
+                    <div class="post-header" style="cursor:default;">
+                        <div class="post-avatar" style="background:#fff;"><img src="rek.png" onerror="this.src='https://ui-avatars.com/api/?name=Ad&background=000&color=fff'" style="width:100%; height:100%; object-fit:cover;"></div>
+                        <div>
+                            <div style="font-weight:700;">Реклама <span class="material-symbols-rounded" style="font-size:14px; color:var(--text-muted); vertical-align:middle;">verified</span></div>
+                        </div>
+                    </div>
+                    <div class="post-title">${window.emojiParse(window.safe(p.title))}</div>
+                    <div class="ad-media-container">
+                        <img src="${window.safe(p.mediaUrl)}" alt="Реклама">
+                        <div class="ad-badge">Реклама</div>
+                    </div>
+                    ${isAdmin ? `<div class="action-btn" style="color:var(--danger); margin-top:16px;" onclick="event.stopPropagation(); window.deletePost('${p.id}')"><span class="material-symbols-rounded">delete</span> Удалить (Админ)</div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    const myL = hasVoted(p.likes), myD = hasVoted(p.dislikes);
+    const myS = currentUser?.bookmarks?.[p.id];
+    const isMyPost = currentUser && p.authorId === currentUser.username;
+    
+    const rawText = p.content.replace(/<[^>]*>/g, '');
+    const lineBreaks = (p.content.match(/<br>/g) || []).length;
+    const isLong = rawText.length > 250 || lineBreaks > 4;
+    
+    return `
+        <div class="post" id="post-${p.id}">
+            <div class="post-header" onclick="window.openProfile('${p.authorId}')">
+                <div class="post-avatar">${window.emojiParse(window.safe(p.authorAvatar))}</div>
+                <div>
+                    <div style="font-weight:700;">${window.emojiParse(window.safe(p.authorName))} <span style="color:var(--text-muted);font-weight:400;font-size:14px;">@${window.safe(p.authorId)}</span></div>
+                    <div style="font-size:12px; color:var(--text-muted);">${new Date(p.timestamp).toLocaleString()} • ${p.age}+</div>
+                </div>
+            </div>
+            <div class="post-title" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">${window.emojiParse(window.safe(p.title))}</div>
+            
+            <div class="post-content-wrap" onclick="${!isSingle ? `window.openPost('${p.id}')` : ''}">
+                <div class="post-content ${!isSingle && isLong ? 'truncated' : ''}">${window.emojiParse(p.content)}</div>
+                ${!isSingle && isLong ? `<div class="read-more-btn"><b>...еще</b></div>` : ''}
+            </div>
+
+            <div class="post-actions">
+                <div class="action-btn ${myL ? 'active-like' : ''}" onclick="window.vote('posts/${p.id}/likes')"><span class="material-symbols-rounded">thumb_up</span> ${countVotes(p.likes)}</div>
+                <div class="action-btn ${myD ? 'active-dislike' : ''}" onclick="window.vote('posts/${p.id}/dislikes')"><span class="material-symbols-rounded">thumb_down</span> ${countVotes(p.dislikes)}</div>
+                ${!isSingle ? `<div class="action-btn" onclick="window.openPost('${p.id}')"><span class="material-symbols-rounded">chat_bubble</span></div>` : ''}
+                
+                <div class="action-btn" style="margin-left:auto;" onclick="window.sharePost('${p.id}')"><span class="material-symbols-rounded">share</span></div>
+                <div class="action-btn ${myS ? 'active-save' : ''}" onclick="window.toggleSave('${p.id}')"><span class="material-symbols-rounded">${myS ? 'bookmark' : 'bookmark_border'}</span></div>
+                ${isMyPost || isAdmin
+                    ? `<div class="action-btn" style="color:var(--danger);" onclick="window.deletePost('${p.id}')"><span class="material-symbols-rounded">delete</span></div>` 
+                    : `<div class="action-btn" onclick="window.prepareReport('posts/${p.id}')"><span class="material-symbols-rounded">flag</span></div>`
+                }
+            </div>
+        </div>
+    `;
+}
+
+window.setFeedSort = (sort, btn) => {
+    document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'var(--border-color)'; b.style.color = 'var(--text-color)'; });
+    btn.classList.add('active'); btn.style.background = 'var(--btn-bg)'; btn.style.color = 'var(--btn-text)';
+    feedSort = sort; window.renderFeed();
+};
+
+window.renderFeed = () => {
+    const q = el('search-input').value.toLowerCase();
+    let filtered = allPosts.filter(p => p.title.toLowerCase().includes(q) || (p.content && p.content.toLowerCase().includes(q)));
+    if(feedSort === 'new') filtered.sort((a,b) => b.timestamp - a.timestamp);
+    else filtered.sort((a,b) => countVotes(b.likes) - countVotes(a.likes));
+    el('feed-list').innerHTML = filtered.length ? filtered.map(p => createPostHTML(p)).join('') : '<p style="text-align:center;color:var(--text-muted); margin-top: 20px;">Ничего не найдено</p>';
+};
+el('search-input').addEventListener('input', window.renderFeed);
+
+let pStartY = 0, pPulling = false;
+const screenNode = el('main-screen');
+const ptrNode = el('ptr-indicator');
+const ptrIcon = ptrNode.querySelector('.ptr-icon');
+
+screenNode.addEventListener('touchstart', e => {
+    if(screenNode.scrollTop <= 0 && !el('tab-feed').classList.contains('hidden')) { pStartY = e.touches[0].clientY; pPulling = true; ptrNode.style.transition = 'none'; }
+}, {passive: true});
+screenNode.addEventListener('touchmove', e => {
+    if(!pPulling) return; const diff = e.touches[0].clientY - pStartY;
+    if(diff > 0 && screenNode.scrollTop <= 0) { let h = Math.min(diff * 0.4, 70); ptrNode.style.height = h + 'px'; ptrIcon.style.transform = `rotate(${diff * 1.5}deg)`; } else { pPulling = false; ptrNode.style.height = '0px'; }
+}, {passive: true});
+screenNode.addEventListener('touchend', e => {
+    if(!pPulling) return; pPulling = false; ptrNode.style.transition = 'height 0.3s ease';
+    if(parseInt(ptrNode.style.height) > 50) {
+        ptrNode.style.height = '50px'; ptrIcon.classList.add('rotating');
+        setTimeout(() => { window.renderFeed(); window.showToast("Обновлено", "Лента обновлена", "check_circle"); ptrNode.style.height = '0px'; setTimeout(() => ptrIcon.classList.remove('rotating'), 300); }, 600);
+    } else { ptrNode.style.height = '0px'; }
+});
+
+window.vote = async (path) => {
+    const refPath = ref(db, `${path}/${currentUser.username}`); const snap = await get(refPath);
+    if(snap.exists()) await remove(refPath);
+    else {
+        await set(refPath, true);
+        if(path.includes('likes')) {
+            const pId = path.split('/')[1], isCom = path.includes('comments/');
+            if(!isCom) {
+                const p = allPosts.find(x => x.id === pId);
+                if(p && !p.isAd && p.authorId !== currentUser.username) push(ref(db, `notifications/${p.authorId}`), { text: `@${currentUser.username} оценил ваш мем`, ts: Date.now(), targetPost: pId });
+            } else {
+                const cSnap = await get(ref(db, `comments/${pId}/${path.split('/')[2]}`));
+                if(cSnap.exists() && cSnap.val().authorId !== currentUser.username) push(ref(db, `notifications/${cSnap.val().authorId}`), { text: `@${currentUser.username} лайкнул коммент`, ts: Date.now(), targetPost: pId });
+            }
+        }
+    }
+};
+
+window.toggleSave = async (pid) => {
+    const path = `users/${currentUser.username}/bookmarks/${pid}`; const snap = await get(ref(db, path));
+    if(snap.exists()) { await remove(ref(db, path)); window.showToast("Удалено", "Удалено из закладок", "bookmark_remove"); }
+    else { await set(ref(db, path), true); window.showToast("Сохранено", "Добавлено в закладки", "bookmark_added"); }
+};
+
+window.deletePost = (pid) => {
+    window.customConfirm("Удаление", "Точно удалить этот пост?", "Удалить", async () => {
+        await remove(ref(db, `posts/${pid}`)); await remove(ref(db, `comments/${pid}`)); window.showToast("Удалено", "Пост удален", "delete"); if(currentPostViewId===pid) window.closePage('page-post'); 
+    });
+};
+
+window.deleteComment = (pid, cid) => {
+    window.customConfirm("Удаление", "Удалить комментарий?", "Удалить", async () => {
+        await remove(ref(db, `comments/${pid}/${cid}`)); window.showToast("Удалено", "Комментарий удален", "delete"); 
+    });
+};
+
+// Админ: Удаление пользователя
+window.adminDeleteUser = () => {
+    window.customConfirm("Админ: Удаление", "Точно удалить пользователя и все его данные?", "Удалить", async () => {
+        await remove(ref(db, `users/${currentUserViewId}`));
+        // При желании можно удалить его посты циклом, но пока удаляем базу профиля
+        window.showToast("Удалено", "Пользователь удален", "delete");
+        window.closePage('page-user');
+    });
+};
+
+// Админ: Бан пользователя
+window.adminBanUser = () => {
+    window.customConfirm("Админ: Бан", "Заблокировать устройство пользователя навсегда?", "Забанить", async () => {
+        await set(ref(db, `banned_devices/${currentUserViewId}`), true);
+        window.showToast("Забанен", "Пользователь заблокирован", "block");
+    });
+};
+
+// Реклама
+window.openAdModal = () => {
+    el('ad-title').value = ''; el('ad-media').value = ''; el('ad-link').value = '';
+    el('create-ad-modal').classList.add('active');
+};
+el('btn-publish-ad').onclick = async () => {
+    const title = el('ad-title').value.trim();
+    const mediaUrl = el('ad-media').value.trim();
+    const targetUrl = el('ad-link').value.trim();
+
+    if(!title || !mediaUrl || !targetUrl) return window.showToast("Ошибка", "Заполните все поля", "error");
+
+    await set(push(ref(db, 'posts')), {
+        isAd: true,
+        title: title,
+        mediaUrl: mediaUrl,
+        targetUrl: targetUrl,
+        timestamp: Date.now()
+    });
+
+    window.showToast("Опубликовано", "Рекламный пост создан", "campaign");
+    el('create-ad-modal').classList.remove('active');
+};
+
+window.sharePost = (pid) => {
+    const p = allPosts.find(x => x.id === pid);
+    if(p) {
+        const link = window.location.origin + window.location.pathname + "?post=" + pid;
+        let pureText = "";
+        if(p.content) {
+            let tmp = document.createElement('div');
+            tmp.innerHTML = p.content;
+            pureText = tmp.textContent || tmp.innerText || "";
+        }
+        const text = `Зацени мем "${p.title}" в OnlyMemes!\n\n${pureText}\n\n${link}`;
+        if(navigator.clipboard) navigator.clipboard.writeText(text).then(() => window.showToast("Скопировано", "Мем скопирован", "content_copy")).catch(()=> window.showToast("Мем", text, "content_copy"));
+        else window.showToast("Мем", text, "content_copy");
+    }
+};
+
+window.shareProfile = (uid) => {
+    const link = window.location.origin + window.location.pathname + "?user=" + uid;
+    if(navigator.clipboard) navigator.clipboard.writeText(link).then(() => window.showToast("Скопировано", "Ссылка скопирована", "content_copy")).catch(()=> window.showToast("Ссылка", link, "content_copy"));
+    else window.showToast("Ссылка", link, "content_copy");
+};
+
+window.shareComment = (pid, cid) => {
+    const link = window.location.origin + window.location.pathname + "?post=" + pid + "&comment=" + cid;
+    if(navigator.clipboard) navigator.clipboard.writeText(link).then(() => window.showToast("Скопировано", "Ссылка на коммент скопирована", "content_copy")).catch(()=> window.showToast("Ссылка", link, "content_copy"));
+    else window.showToast("Ссылка", link, "content_copy");
+};
+
+window.prepareReport = (path) => {
+    reportTargetData = path;
+    document.querySelectorAll('input[name="r_reason"]').forEach(r => r.checked = false);
+    el('report-modal').classList.add('active');
+};
+window.closeReportModal = () => { el('report-modal').classList.remove('active'); reportTargetData = null; };
+
+window.submitReport = async () => {
+    const checked = document.querySelector('input[name="r_reason"]:checked');
+    if(!checked) return window.showToast("Ошибка", "Выберите причину жалобы", "error");
+    const reason = checked.value, targetPath = reportTargetData;
+    window.closeReportModal();
+
+    const refPath = ref(db, `${targetPath}/reports/${currentUser.username}`);
+    const snapCheck = await get(refPath);
+    if(snapCheck.exists()) return window.showToast("Уже отправлено", "Вы уже жаловались", "info");
+
+    await set(refPath, reason);
+    const objSnap = await get(ref(db, targetPath));
+    const objData = objSnap.val();
+    const reportsObj = objData.reports || {};
+    const count = Object.keys(reportsObj).length;
+    
+    if(count >= 3 && !objData.ai_cleared) {
+        window.showToast("Проверка", "Спасибо! Жалобы отправлены на анализ ИИ.", "psychology");
+        let textToAnalyze = objData.text || ((objData.title || '') + " " + (objData.content || ''));
+        let reasonList = Object.values(reportsObj).join(", ");
+        
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST", 
+                headers: { 
+                    "Authorization": `Bearer ${AI_KEY}`, 
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "OnlyMemes"
+                },
+                body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: `Текст: "${textToAnalyze}". На этот текст поступили жалобы: ${reasonList}. Является ли этот текст откровенным спамом, жестким оскорблением или порнографией? Ответь ТОЛЬКО одним словом YES (если нужно удалить) или NO (если можно оставить).` }]})
+            });
+            const data = await res.json();
+            if(data.choices && data.choices[0].message.content.trim().toUpperCase().includes("YES")) {
+                await remove(ref(db, targetPath));
+                if(targetPath.startsWith('posts/')) {
+                    const pId = targetPath.split('/')[1]; await remove(ref(db, `comments/${pId}`));
+                    if(currentPostViewId === pId) window.closePage('page-post');
+                }
+            } else { await update(ref(db, targetPath), { ai_cleared: true }); await set(ref(db, `${targetPath}/reports`), null); }
+        } catch(e) {
+            console.error(e);
+            window.showToast("Ошибка ИИ", "Сервер ИИ не отвечает. Обратитесь в поддержку.", "error");
+        }
+    } else { window.showToast("Спасибо!", "Спасибо, что помогаете делать сообщество лучше.", "verified_user"); }
+};
+
+el('btn-publish').onclick = async () => {
+    const t = window.safe(el('post-title').value.trim());
+    const cHTML = el('post-content').innerHTML;
+    const c = window.safeHTML(cHTML);
+    const a = parseInt(el('post-age').querySelector('.active').dataset.age);
+    
+    if(!t || !c) return window.showToast("Ошибка", "Заполни поля", "error");
+    
+    let tmp = document.createElement('div');
+    tmp.innerHTML = c;
+    let cleanTextForAI = tmp.textContent || tmp.innerText || "";
+    
+    if(cleanTextForAI.length > 900) return window.showToast("Ошибка", "Максимум 900 символов!", "error");
+
+    window.showToast("Проверка ИИ", "Мем анализируется...", "psychology");
+
+    try {
+        const promptText = `Ты модератор соцсети "Только Мемы". Указанная возрастная категория автора для этого поста: ${a}+.
+Твоя задача — строго проверять текст на соответствие возрасту!
+ПРАВИЛА:
+Для 6+: Абсолютно детские, добрые мемы. Строго ЗАПРЕЩЕНЫ: любой мат, сексуальный подтекст (слова типа "стояк", "секс", "дрочить" и т.д.), алкоголь, жестокость.
+Для 14+: Подростковый юмор. Разрешен сленг, но ЗАПРЕЩЕН мат, откровенная пошлость и взрослые 18+ темы.
+Для 18+: Разрешено всё, включая мат и черный юмор.
+Оцени текст. Если он НАРУШАЕТ правила указанной категории ${a}+ ИЛИ является прямым спамом, ответь ТОЛЬКО одним словом: NO.
+Если он полностью подходит под возраст ${a}+ и является мемом/шуткой/жизой, ответь ТОЛЬКО одним словом: YES.
+Заголовок: "${t}"
+Текст: "${cleanTextForAI}"`;
+
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST", 
+            headers: { 
+                "Authorization": `Bearer ${AI_KEY}`, 
+                "Content-Type": "application/json",
+                "HTTP-Referer": window.location.href,
+                "X-Title": "OnlyMemes"
+            },
+            body: JSON.stringify({ model: AI_MODEL, messages: [{ role: "user", content: promptText }]})
+        });
+        const data = await res.json();
+        
+        if(!data.choices || !data.choices[0].message.content.trim().toUpperCase().includes("YES")) {
+            return window.showToast("Отказано", `ИИ отклонил пост для категории ${a}+.`, "block");
+        }
+    } catch(e) {
+        console.error(e);
+        return window.showToast("Ошибка ИИ", "Сервер ИИ не отвечает. Невозможно выложить пост. Обратитесь в поддержку.", "error");
+    }
+
+    document.querySelector('[data-tab="feed"]').click();
+    await set(push(ref(db, 'posts')), { authorId: currentUser.username, authorName: currentUser.name, authorAvatar: currentUser.avatar, title: t, content: c, age: a, timestamp: Date.now() });
+    window.showToast("Опубликовано", "Твой мем в ленте!", "rocket_launch"); 
+    el('post-title').value = ''; 
+    el('post-content').innerHTML = '';
+    el('char-counter').innerText = "0 / 900";
+    el('char-counter').style.color = "var(--text-muted)";
+};
+
+window.openEditProfile = () => { el('edit-name').value = currentUser.name || ''; el('edit-bio').value = currentUser.bio || ''; el('edit-profile-modal').classList.add('active'); };
+el('btn-save-profile').onclick = async () => {
+    const name = el('edit-name').value.trim(), bio = el('edit-bio').value.trim();
+    if(!name) return window.showToast("Ошибка", "Имя обязательно", "error");
+    await update(ref(db, `users/${currentUser.username}`), { name, bio });
+    window.showToast("Сохранено", "Профиль обновлен", "check_circle"); el('edit-profile-modal').classList.remove('active');
+};
+
+async function renderMyProfile() {
+    if(!currentUser) return;
+    el('my-name').innerHTML = window.emojiParse(window.safe(currentUser.name)); el('my-user').innerText = "@"+currentUser.username;
+    el('my-avatar').innerHTML = window.emojiParse(window.safe(currentUser.avatar)); el('my-bio').innerHTML = currentUser.bio ? window.emojiParse(window.safe(currentUser.bio)) : '';
+    
+    const myPosts = allPosts.filter(p => p.authorId === currentUser.username);
+    el('my-stat-posts').innerText = myPosts.length;
+    el('my-posts').innerHTML = myPosts.length ? myPosts.map(p => createPostHTML(p)).join('') : '<p style="color:var(--text-muted)">Нет постов</p>';
+    
+    const bIds = currentUser.bookmarks ? Object.keys(currentUser.bookmarks) : [], bPosts = allPosts.filter(p => bIds.includes(p.id));
+    el('my-saved').innerHTML = bPosts.length ? bPosts.map(p => createPostHTML(p)).join('') : '<p style="color:var(--text-muted)">Нет закладок</p>';
+
+    const liked = allPosts.filter(p => hasVoted(p.likes));
+    el('my-likes').innerHTML = liked.length ? liked.map(p => createPostHTML(p)).join('') : '<p style="color:var(--text-muted)">Нет лайков</p>';
+
+    el('my-stat-followers').innerText = countVotes((await get(ref(db, `followers/${currentUser.username}`))).val());
+
+    let fHTML = ''; const fSnap = await get(ref(db, `following/${currentUser.username}`));
+    if(fSnap.exists()) Object.keys(fSnap.val()).forEach(uid => { const u = allUsers[uid]; if(u) fHTML += `<div class="user-row" onclick="window.openProfile('${uid}')"><div style="font-size:24px;">${window.emojiParse(window.safe(u.avatar))}</div> <div style="font-weight:600;">${window.emojiParse(window.safe(u.name))} <span style="font-weight:400;color:var(--text-muted)">@${u.username}</span></div></div>`; });
+    el('my-following').innerHTML = fHTML || '<p style="color:var(--text-muted)">Нет подписок</p>';
+}
+
+window.openProfile = async (uid, noPush = false) => {
+    if(currentUser && uid === currentUser.username) return document.querySelector('[data-tab="profile"]').click();
+    const u = allUsers[uid]; if(!u) return;
+    currentUserViewId = uid;
+    if(!noPush) window.updateURL({user: uid});
+
+    el('u-page-name').innerHTML = window.emojiParse(window.safe(u.name)); el('u-page-user').innerText = "@"+u.username;
+    el('u-page-avatar').innerHTML = window.emojiParse(window.safe(u.avatar)); el('u-page-bio').innerHTML = u.bio ? window.emojiParse(window.safe(u.bio)) : '';
+    
+    el('u-stat-followers').innerText = countVotes((await get(ref(db, `followers/${uid}`))).val());
+    
+    // Админская панель управления юзером
+    if(isAdmin) {
+        el('admin-user-controls').classList.remove('hidden');
+    } else {
+        el('admin-user-controls').classList.add('hidden');
+    }
+
+    const myFolSnap = await get(ref(db, `followers/${uid}/${currentUser.username}`));
+    const btn = el('btn-follow'); btn.innerText = myFolSnap.exists() ? "Отписаться" : "Подписаться";
+    btn.onclick = async () => {
+        if(myFolSnap.exists()) {
+            await remove(ref(db, `followers/${uid}/${currentUser.username}`)); await remove(ref(db, `following/${currentUser.username}/${uid}`));
+            btn.innerText = "Подписаться";
+        } else {
+            await set(ref(db, `followers/${uid}/${currentUser.username}`), true); await set(ref(db, `following/${currentUser.username}/${uid}`), true);
+            push(ref(db, `notifications/${uid}`), { text: `@${currentUser.username} подписался на вас`, ts: Date.now(), targetUser: currentUser.username });
+            btn.innerText = "Отписаться";
+        }
+        window.openProfile(uid, true);
+    };
+
+    const posts = allPosts.filter(p => p.authorId === uid);
+    el('u-page-posts').innerHTML = posts.length ? posts.map(p => createPostHTML(p)).join('') : '<p style="color:var(--text-muted)">Нет постов</p>';
+    window.openPage('page-user');
+};
+
+window.openPost = (pid, noPush = false) => {
+    currentPostViewId = pid; const p = allPosts.find(x => x.id === pid);
+    if(!p) return window.closePage('page-post', true);
+    
+    if(p.isAd) {
+        window.open(p.targetUrl, '_blank');
+        return;
+    }
+
+    if(!noPush) window.updateURL({post: pid});
+    el('single-post-container').innerHTML = createPostHTML(p, true);
+    loadComments(pid); window.openPage('page-post');
+};
+
+function loadComments(pid) {
+    onValue(ref(db, `comments/${pid}`), snap => {
+        if(currentPostViewId !== pid) return;
+        const cont = el('single-comments-list'); cont.innerHTML = '';
+        if(!snap.exists()) return cont.innerHTML = '<p style="color:var(--text-muted);">Нет комментариев</p>';
+        let html = '';
+        snap.forEach(c => {
+            const cm = c.val(); cm.id = c.key;
+            const isMyCom = cm.authorId === currentUser.username;
+            html += `
+                <div class="comment ${cm.replyTo ? 'reply' : ''}" id="comment-${cm.id}">
+                    <div class="comment-header" onclick="window.openProfile('${cm.authorId}')"><span style="font-weight:700;">${window.emojiParse(window.safe(cm.authorName))}</span> <span style="color:var(--text-muted);">@${window.safe(cm.authorId)}</span></div>
+                    ${cm.replyTo ? `<div style="font-size:12px;color:#5856d6;margin-top:4px;">Ответ @${window.safe(cm.replyTo)}</div>` : ''}
+                    <div class="comment-text">${window.emojiParse(window.safe(cm.text))}</div>
+                    <div class="comment-actions">
+                        <span class="action-btn ${hasVoted(cm.likes) ? 'active-like' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/likes')"><span class="material-symbols-rounded" style="font-size:18px;">thumb_up</span> ${countVotes(cm.likes)}</span>
+                        <span class="action-btn ${hasVoted(cm.dislikes) ? 'active-dislike' : ''}" onclick="window.vote('comments/${pid}/${cm.id}/dislikes')"><span class="material-symbols-rounded" style="font-size:18px;">thumb_down</span> ${countVotes(cm.dislikes)}</span>
+                        <span class="action-btn" onclick="window.setReply('${cm.authorId}')"><span class="material-symbols-rounded" style="font-size:18px;">reply</span></span>
+                        
+                        <span class="action-btn" style="margin-left:auto;" onclick="window.shareComment('${pid}', '${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">share</span></span>
+                        ${isMyCom || isAdmin
+                            ? `<span class="action-btn" style="color:var(--danger);" onclick="window.deleteComment('${pid}', '${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></span>`
+                            : `<span class="action-btn" onclick="window.prepareReport('comments/${pid}/${cm.id}')"><span class="material-symbols-rounded" style="font-size:18px;">flag</span></span>`
+                        }
+                    </div>
+                </div>
+            `;
+        });
+        cont.innerHTML = html;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('post') === pid && urlParams.has('comment')) {
+            const cid = urlParams.get('comment');
+            setTimeout(() => {
+                const cEl = document.getElementById('comment-' + cid);
+                if(cEl) {
+                    cEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    cEl.style.backgroundColor = 'rgba(88, 86, 214, 0.15)';
+                    setTimeout(() => cEl.style.backgroundColor = 'transparent', 2500);
+                }
+            }, 300);
+        }
+    });
+}
+
+window.setReply = (uid) => { replyToCommentId = uid; const inp = el('com-input'); inp.value = `@${uid} `; inp.focus(); };
+
+el('btn-send-com').onclick = async () => {
+    const inp = el('com-input'); let txt = inp.value.trim();
+    if(!txt || !currentPostViewId) return;
+    
+    let isReplyTo = null;
+    if(txt.startsWith('@') && txt.includes(' ')) {
+        const parts = txt.split(' '); isReplyTo = parts[0].substring(1); txt = parts.slice(1).join(' ');
+    }
+    const cm = { authorId: currentUser.username, authorName: currentUser.name, text: txt, timestamp: Date.now() };
+    if(isReplyTo) cm.replyTo = isReplyTo;
+    
+    await push(ref(db, `comments/${currentPostViewId}`), cm);
+    const p = allPosts.find(x=>x.id===currentPostViewId);
+    if(p && !p.isAd && p.authorId !== currentUser.username) push(ref(db, `notifications/${p.authorId}`), { text: `@${currentUser.username} оставил комментарий`, ts: Date.now(), targetPost: currentPostViewId });
+    inp.value = ''; replyToCommentId = null;
+};
+</script>
+</body>
+</html>
